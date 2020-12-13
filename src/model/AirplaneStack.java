@@ -32,14 +32,6 @@ public class AirplaneStack {
             this.isEnteredFinalPath = true;
         }
     }
-    private Color setColor(int a){
-        int r = a / 4;
-        if (r == 0){return Color.YELLOW;}
-        if (r == 1){return Color.BLUE;}
-        if (r == 2){return Color.GREEN;}
-        if (r == 3){return Color.RED;}
-        return null;
-    }
     public void update(int passLength){
         if (!isDeparted){
             this.passLength = passLength;
@@ -47,16 +39,16 @@ public class AirplaneStack {
             if (isEnteredFinalPath){currentPoint = new Point(Color.BLANK, passLength - 51);}
             else {
                 if (color == Color.GREEN){
-                    currentPoint = new Point(setColor(passLength), passLength - 1);
+                    currentPoint = new Point(Map.setColor(passLength), passLength - 1);
                 }
                 if (color == Color.RED){
-                    currentPoint = new Point(setColor(passLength + 13), passLength + 13 - 1);
+                    currentPoint = new Point(Map.setColor(passLength + 13), passLength + 13 - 1);
                 }
                 if (color == Color.YELLOW){
-                    currentPoint = new Point(setColor(passLength + 26), passLength + 26 - 1);
+                    currentPoint = new Point(Map.setColor(passLength + 26), passLength + 26 - 1);
                 }
                 if (color == Color.BLUE){
-                    currentPoint = new Point(setColor(passLength + 39), passLength + 39 - 1);
+                    currentPoint = new Point(Map.setColor(passLength + 39), passLength + 39 - 1);
                 }
             }
         }
@@ -67,4 +59,5 @@ public class AirplaneStack {
             update(this.passLength);
         }
     }
+    public Point getPoint(){return currentPoint;}
 }

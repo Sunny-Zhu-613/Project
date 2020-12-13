@@ -13,7 +13,7 @@ public class Map {
         this.airplaneStacks = new ArrayList<>();
         initMap();
     }
-    private Color setColor(int a){
+    static Color setColor(int a){
         int r = a / 4;
         if (r == 0){return Color.YELLOW;}
         if (r == 1){return Color.BLUE;}
@@ -32,10 +32,21 @@ public class Map {
         }
     }
 
-    public void setPlayers(Player player){
+    public void addPlayers(Player player){
         players.add(player);
     }
-    public void setAirplaneStacks(AirplaneStack airplaneStack){
+    public void addAirplaneStacks(AirplaneStack airplaneStack){
         airplaneStacks.add(airplaneStack);
+    }
+    public AirplaneStack getAirplaneStackAt(Point point){
+        for (AirplaneStack x : airplaneStacks){
+            if (x.getPoint().getPosition() == point.getPosition() && x.getPoint().getColor() == point.getColor()){
+                return x;
+            }
+        }
+        return null;
+    }
+    public void removeAirplaneStackAt(Point point){
+        airplaneStacks.remove(getAirplaneStackAt(point));
     }
 }
