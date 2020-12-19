@@ -52,16 +52,16 @@ public class AirplaneStack {
             if (isEnteredFinalPath){currentPoint = new Point(Color.BLANK, passLength - 51);}
             else {
                 if (color == Color.GREEN){
-                    currentPoint = new Point(Map.setColor(passLength), passLength - 1);
+                    currentPoint = new Point(Map.getColorByIndex(passLength), passLength - 1);
                 }
                 if (color == Color.RED){
-                    currentPoint = new Point(Map.setColor(passLength + 13), passLength + 13 - 1);
+                    currentPoint = new Point(Map.getColorByIndex(passLength + 13), passLength + 13 - 1);
                 }
                 if (color == Color.YELLOW){
-                    currentPoint = new Point(Map.setColor(passLength + 26), passLength + 26 - 1);
+                    currentPoint = new Point(Map.getColorByIndex(passLength + 26), passLength + 26 - 1);
                 }
                 if (color == Color.BLUE){
-                    currentPoint = new Point(Map.setColor(passLength + 39), passLength + 39 - 1);
+                    currentPoint = new Point(Map.getColorByIndex(passLength + 39), passLength + 39 - 1);
                 }
             }
         }
