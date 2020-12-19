@@ -13,21 +13,16 @@ public class Map {
         this.airplaneStacks = new ArrayList<>();
         initMap();
     }
-    static Color setColor(int a){
-        int r = a / 4;
-        if (r == 0){return Color.YELLOW;}
-        if (r == 1){return Color.BLUE;}
-        if (r == 2){return Color.GREEN;}
-        if (r == 3){return Color.RED;}
-        return null;
+    static Color getColorByIndex(int a){
+        return Color.values()[a / 4];
     }
     private void initMap(){
         for (int i = 1; i <= 52; i++){
-            points.add(new Point(setColor(i), i));
+            points.add(new Point(getColorByIndex(i), i));
         }
         for (int i = 0; i < 4; i++){
             for (int j = 1 ; j <= 4; j++){
-                airplaneStacks.add(new AirplaneStack(setColor(j)));
+                airplaneStacks.add(new AirplaneStack(getColorByIndex(j)));
             }
         }
     }
