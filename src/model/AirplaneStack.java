@@ -32,8 +32,21 @@ public class AirplaneStack {
             this.isEnteredFinalPath = true;
         }
     }
+
+    public boolean isDeparted() {
+        return isDeparted;
+    }
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public boolean isEnteredFinalPath() {
+        return isEnteredFinalPath;
+    }
+
     public void update(int passLength){
-        if (!isDeparted){
+        if (!isDeparted && passLength > 0){
             this.passLength = passLength;
             setEnteredFinalPath();
             if (isEnteredFinalPath){currentPoint = new Point(Color.BLANK, passLength - 51);}
@@ -53,11 +66,13 @@ public class AirplaneStack {
             }
         }
     }
+
     public void moveBy(int steps){
-        if (!isDeparted){
+        if (!isDeparted && steps > 0){
             this.passLength = passLength + steps;
             update(this.passLength);
         }
     }
+
     public Point getPoint(){return currentPoint;}
 }
