@@ -1,4 +1,4 @@
-package model;
+package Model;
 
 public class AirplaneStack {
     private final Color color;

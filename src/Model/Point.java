@@ -1,4 +1,4 @@
-package model;
+package Model;
 
 public class Point {
     private final Color color;
