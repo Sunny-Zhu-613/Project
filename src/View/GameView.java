@@ -54,8 +54,13 @@ public class GameView {
         pointList.addAll(this.pointEdge(0, 9, 0, 4, 8));
         pointList.addAll(this.pointEdge(0, 4, 3, 4, 13));
         pointList.addAll(this.pointEdge(4, 3, 4, 0, 17));
-        // ***********************************
-        //to be finished.
+        pointList.addAll(this.pointEdge(5, 0, 9, 0, 21));
+        pointList.addAll(this.pointEdge(10, 0, 10, 3, 26));
+        pointList.addAll(this.pointEdge(11, 4, 14, 4, 30));
+        pointList.addAll(this.pointEdge(14, 5, 14, 9, 34));
+        pointList.addAll(this.pointEdge(14, 10, 11, 10, 39));
+        pointList.addAll(this.pointEdge(10, 11, 10, 14, 43));
+        pointList.addAll(this.pointEdge(9, 14, 5, 14, 47));
 
         map.getChildren().addAll(pointList);
 
