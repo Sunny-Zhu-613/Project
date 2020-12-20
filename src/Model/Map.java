@@ -14,7 +14,10 @@ public class Map {
         initMap();
     }
     static Color getColorByIndex(int a){
-        return Color.values()[a / 4];
+        return Color.values()[a % 4];
+    }
+    public Point getPointByIndex(int index) {
+        return this.points.get(index);
     }
     private void initMap(){
         for (int i = 1; i <= 52; i++){
