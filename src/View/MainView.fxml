@@ -1,31 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
-<StackPane xmlns="http://javafx.com/javafx"
-           xmlns:fx="http://javafx.com/fxml"
-           fx:controller="Control.MainController"
-           prefHeight="400.0" prefWidth="600.0">
-    <Label text="Welcome to Aeroplane!"
-           StackPane.alignment="TOP_CENTER">
+<StackPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Control.MainController">
+    <Label text="Welcome to Aeroplane!" StackPane.alignment="TOP_CENTER">
         <StackPane.margin>
-            <Insets top="20.0"/>
+            <Insets top="20.0" />
         </StackPane.margin>
         <font>
-            <Font size="40.0"/>
+            <Font size="40.0" />
         </font>
     </Label>
     <VBox alignment="BOTTOM_CENTER" spacing="20">
         <StackPane.margin>
-            <Insets bottom="40"></Insets>
+            <Insets bottom="40.0" />
         </StackPane.margin>
-        <Button fx:id="startBtn" text="Start" prefHeight="30" prefWidth="100"></Button>
-        <Button fx:id="LoadBtn" text="Load Game" prefHeight="30" prefWidth="100"></Button>
+        <Button fx:id="startBtn" onAction="#startBtnPressed" prefHeight="30" prefWidth="100" style="-fx-background-color: #FFFFFF;" text="Start" />
+        <Button fx:id="LoadBtn" prefHeight="30" prefWidth="100" style="-fx-background-color: #FFFFFF;" text="Load Game" />
     </VBox>
 </StackPane>
