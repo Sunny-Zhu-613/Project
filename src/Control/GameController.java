@@ -1,5 +1,6 @@
 package Control;
 
+import Model.AirplaneStack;
 import Model.Color;
 import Model.Map;
 import View.GameView;
@@ -49,5 +50,16 @@ public class GameController {
 
     public void divideBtnPressed() {
         return;
+    }
+
+    public boolean departureAttempt(AirplaneStack toLiftOff) {
+        //legal attempt checking
+        //...
+        //return false if illegal;
+        if (toLiftOff.isDepartured()) return false;
+
+        //Lift off
+        toLiftOff.setDepartured();
+        return true;
     }
 }

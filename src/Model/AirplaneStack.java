@@ -77,4 +77,5 @@ public class AirplaneStack {
     public Point getPoint() {return currentPoint;}
     public Color getColor() {return color;}
     public int getStackNum() {return this.stackNum;}
+    public int getPassLength() {return this.passLength;}
 }

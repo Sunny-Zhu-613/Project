@@ -4,6 +4,7 @@ import Control.GameController;
 import Model.AirplaneStack;
 import Model.Map;
 import Model.Point;
+import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -18,6 +20,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Translate;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,23 +75,41 @@ public class GameView {
                     .stream()
                     .filter(air -> !(air.isDepartured()))
                     .collect(Collectors.toList());
-            System.out.println(undepartured);
+//            System.out.println(undepartured);
             int j = 0;
             for (AirplaneStack air : undepartured) {
                 StackPane airPlane = new StackPane();
+                airPlane.setUserData(air);
 
                 Circle planeCircle = new Circle();
                 planeCircle.setFill(Color.valueOf(colorPlaneCSS(color)));
                 planeCircle.setRadius(planeRadius);
-//                planeCircle.setCenterX(airPlane.getWidth() / 2);
-//                planeCircle.setCenterY(airPlane.getHeight() / 2);
+                planeCircle.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+
+                        if (gameController.departureAttempt(air)) {
+                            TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
+                            double deltaX = waitingAreaCenterX(air.getColor()) - planeCircle.getCenterX();
+                            double deltaY = waitingAreaCenterY(air.getColor()) - planeCircle.getCenterY();
+
+                            departure.setByX(deltaX);
+                            departure.setByY(deltaY);
+                            System.out.println(air.getColor().toString() + " departure:");
+                            System.out.println("From: "+ planeCircle.getCenterX() + ", " + planeCircle.getCenterY());
+                            System.out.println("To: "+ waitingAreaCenterX(air.getColor()) + ", " +
+                                    waitingAreaCenterY(air.getColor()));
+                            System.out.println("(" + deltaX + "," + deltaY + ")");
+
+                            departure.play();
+                        }
+                    }
+                });
+
                 airPlane.getChildren().add(planeCircle);
 
-                //************
-                //add button here
-
                 double x = hangerCenterX(i) + 2 * pointRadius, y = hangerCenterY(i) + 2 * pointRadius;
-                System.out.println(x + " " + y);
+//                System.out.println(x + " " + y);
                 if (j == 0) {
                     x -= 2 * planeRadius;
                     y -= 2 * planeRadius;
@@ -96,6 +118,8 @@ public class GameView {
                 } else if (j == 2) {
                     y -= 2 * planeRadius;
                 }
+                planeCircle.setCenterX(x);
+                planeCircle.setCenterY(y);
                 airPlane.setLayoutX(x);
                 airPlane.setLayoutY(y);
 
@@ -105,6 +129,28 @@ public class GameView {
         }
 
         return allPlanes;
+    }
+
+    private static double waitingAreaCenterX(Model.Color color) {
+        double x = 0;
+        switch (color){
+            case BLUE -> { x = 7 * pointRadius; }
+            case RED -> { x = 23 * pointRadius; }
+            case YELLOW -> { x = 29 * pointRadius; }
+            case GREEN -> { x = pointRadius; }
+        }
+        return x - planeRadius;
+    }
+
+    private static double waitingAreaCenterY(Model.Color color) {
+        double y = 0;
+        switch (color){
+            case BLUE -> { y =  29 * pointRadius; }
+            case RED -> { y = pointRadius; }
+            case YELLOW -> { y = 23 * pointRadius; }
+            case GREEN -> { y = 7 * pointRadius; }
+        }
+        return y - planeRadius;
     }
 
     private static double hangerCenterX(int i) {
