@@ -126,7 +126,21 @@ public class GameController {
             else {
                 toMove.moveBy(chosenNumber);
             }
-
+            if (toMove.getColor() == toMove.getPoint().getColor()){
+                if (toMove.getPassLength() == 18 && toMove.getPassLength() == 14){
+                    toMove.moveBy(16);
+                    for (AirplaneStack stack : map.getAirplaneStacks()){
+                        if (stack.getColor() == Color.shortcut(toMove.getColor()) && stack.getPassLength() == 54){
+                            int n = stack.getStackNum();
+                            map.getAirplaneStacks().remove(stack);
+                            for (int i = 0; i < n; i++){
+                                map.getAirplaneStacks().add(new AirplaneStack(stack.getColor()));
+                            }
+                        }
+                    }
+                }
+                else {toMove.moveBy(4);}
+            }
         }
         return;
     }
