@@ -31,11 +31,7 @@ public class GameController {
     public int getChosenNumber() {return this.chosenNumber;}
 
     public void rollBtnPressed() {
-        if (count >=3){
-            this.currentTurn = currentTurn.next();
-            count = 0;
-        }
-        else {
+
             this.dieNumber1 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
             this.dieNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
             System.out.println("(" + dieNumber1 + ", " + dieNumber2 + ")");
@@ -48,7 +44,6 @@ public class GameController {
             if (sum < 10){
                 count += 3;
             }
-        }
 
         // *******
 
@@ -96,19 +91,42 @@ public class GameController {
         return true;
     }
 
+    public void onTurnFinished(){
+        if (count >=3){
+            this.currentTurn = currentTurn.next();
+            count = 0;
+        }
+    }
     public void moveAttempt(AirplaneStack toMove){
         if (toMove.getColor() == getCurrentTurn()){
             AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
-            if (x.getColor() == toMove.getColor()){
+            if (x != null){
+                if (x.getColor() == toMove.getColor()){
+                    int a = x.getStackNum();
+                    map.getAirplaneStacks().remove(x);
+                    toMove.setStackNum(toMove.getStackNum()+a);
+                    toMove.moveBy(chosenNumber);
+                }
+                if (x.getColor() != toMove.getColor()){
+                    toMove.moveBy(chosenNumber);
+                    while (x.getStackNum() > 0 && toMove.getStackNum() > 0){
+                        int BattleNumber1 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+                        int BattleNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+                        if (BattleNumber1 > BattleNumber2){
+                            x.setStackNum(x.getStackNum()-1);
+                            map.addAirplaneStacks(new AirplaneStack(x.getColor()));
+                        }
+                        if (BattleNumber1 < BattleNumber2){
+                            toMove.setStackNum(toMove.getStackNum()-1);
+                            map.addAirplaneStacks(new AirplaneStack(toMove.getColor()));
+                        }
+                    }
+                }
+            }
+            else {
+                toMove.moveBy(chosenNumber);
+            }
 
-            }
-            int a = 0;
-            if (x != null) {
-                a = x.getStackNum();
-                map.getAirplaneStacks().remove(x);
-            }
-            toMove.setStackNum(toMove.getStackNum()+a);
-            toMove.moveBy(chosenNumber);
         }
         return;
     }

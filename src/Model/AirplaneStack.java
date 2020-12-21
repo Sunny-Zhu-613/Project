@@ -45,6 +45,7 @@ public class AirplaneStack {
         return isEnteredFinalPath;
     }
 
+
     public void update(int passLength){
         if (!isDepartured && passLength > 0){
 
