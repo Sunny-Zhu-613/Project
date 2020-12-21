@@ -28,6 +28,7 @@ public class GameController {
     public Color getCurrentTurn() {return this.currentTurn;}
     public int getDieNumber1() {return this.dieNumber1;}
     public int getDieNumber2() {return this.dieNumber2;}
+    public int getChosenNumber() {return this.chosenNumber;}
 
     public void rollBtnPressed() {
         if (count >=3){
@@ -98,14 +99,16 @@ public class GameController {
     public void moveAttempt(AirplaneStack toMove){
         if (toMove.getColor() == getCurrentTurn()){
             AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
-            int a = x.getStackNum();
-            map.getAirplaneStacks().remove(x);
-            map.getAirplaneStacks().remove(toMove);
-            AirplaneStack b = new AirplaneStack(currentTurn);
-            b.setDepartured();
-            b.setStackNum(a + toMove.getStackNum());
-            b.update(toMove.getPassLength()+chosenNumber);
-            map.addAirplaneStacks(b);
+            if (x.getColor() == toMove.getColor()){
+
+            }
+            int a = 0;
+            if (x != null) {
+                a = x.getStackNum();
+                map.getAirplaneStacks().remove(x);
+            }
+            toMove.setStackNum(toMove.getStackNum()+a);
+            toMove.moveBy(chosenNumber);
         }
         return;
     }
