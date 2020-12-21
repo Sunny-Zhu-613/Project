@@ -17,6 +17,7 @@ public class GameController {
     private Color currentTurn;
     private int dieNumber1, dieNumber2;
     private int count = 0;
+    private int chosenNumber;
 
     public GameController() {
         this.map = new Map();
@@ -56,18 +57,21 @@ public class GameController {
     public void addBtnPressed() {
         int addNumber = Math.min(dieNumber1 + dieNumber2,12);
         System.out.println(addNumber);
+        chosenNumber = addNumber;
 
         return;
     }
     public void minusBtnPressed() {
         int minusNumber = Math.max(dieNumber1, dieNumber2) - Math.min(dieNumber1, dieNumber2);
         System.out.println(minusNumber);
+        chosenNumber = minusNumber;
 
         return;
     }
     public void timesBtnPressed() {
         int timesNumber = Math.min(dieNumber1 * dieNumber2,12);
         System.out.println(timesNumber);
+        chosenNumber = timesNumber;
 
         return;
     }
@@ -75,6 +79,7 @@ public class GameController {
     public void divideBtnPressed() {
         int divideNumber = Math.max(dieNumber1, dieNumber2) / Math.min(dieNumber1, dieNumber2);
         System.out.println(divideNumber);
+        chosenNumber = divideNumber;
 
         return;
     }
@@ -89,4 +94,20 @@ public class GameController {
         toLiftOff.setDepartured();
         return true;
     }
+
+    public void moveAttempt(AirplaneStack toMove){
+        if (toMove.getColor() == getCurrentTurn()){
+            AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
+            int a = x.getStackNum();
+            map.getAirplaneStacks().remove(x);
+            map.getAirplaneStacks().remove(toMove);
+            AirplaneStack b = new AirplaneStack(currentTurn);
+            b.setDepartured();
+            b.setStackNum(a + toMove.getStackNum());
+            b.update(toMove.getPassLength()+chosenNumber);
+            map.addAirplaneStacks(b);
+        }
+        return;
+    }
+
 }

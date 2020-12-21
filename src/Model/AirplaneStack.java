@@ -47,10 +47,22 @@ public class AirplaneStack {
 
     public void update(int passLength){
         if (!isDepartured && passLength > 0){
-            this.passLength = passLength;
+
             setEnteredFinalPath();
-            if (isEnteredFinalPath){currentPoint = new Point(Color.BLANK, passLength - 51);}
+            if (passLength == 56){
+                setFinished();
+                this.passLength = passLength;
+            }
+            if (passLength > 56){
+                this.passLength = 56 - (passLength - 56);
+                currentPoint = new Point(Color.BLANK, passLength - 51);
+            }
+            if (isEnteredFinalPath){
+                this.passLength = passLength;
+                currentPoint = new Point(Color.BLANK, passLength - 51);
+            }
             else {
+                this.passLength = passLength;
                 if (color == Color.GREEN){
                     currentPoint = new Point(Map.getColorByIndex(passLength), passLength - 1);
                 }
