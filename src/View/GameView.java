@@ -98,23 +98,30 @@ public class GameView implements java.io.Serializable {
             airPlane.setLayoutX(x);
             airPlane.setLayoutY(y);
 
+            map.getChildren().remove(airPlane);
             map.getChildren().add(airPlane);
             planeCircle.setOnMouseClicked(mouseEvent -> {
                 if (stage != 2) return;
 
-//                if (stack.getPoint() != null)
-//                if (gameController.moveAttempt(stack)) {
-//
-//                }
+                if (gameController.moveAttempt(stack)) {
 //                    map.getChildren().remove(airPlane);
-//
-//                    gameController.onTurnFinished();
-//                    stateColumnUpdate();
-//                    operations.getChildren().removeAll(operations.getChildren());
-//                    operations.getChildren().add(rollBtn);
-//                    stage = 0;
-//                    return;
-//                }
+                    TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
+                    double deltaX = pointList.get(stack.getPoint().getPosition()).getCenterX() - planeCircle.getCenterX();
+                    double deltaY = pointList.get(stack.getPoint().getPosition()).getCenterY() - planeCircle.getCenterY();
+
+                    departure.setByX(deltaX);
+                    departure.setByY(deltaY);
+
+                    departure.play();
+
+                    addStackAt(stack.getPoint().getPosition(), stack);
+                    gameController.onTurnFinished();
+                    stateColumnUpdate();
+                    operations.getChildren().removeAll(operations.getChildren());
+                    operations.getChildren().add(rollBtn);
+                    stage = 0;
+                    return;
+                }
             });
 
         }
