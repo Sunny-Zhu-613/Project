@@ -13,6 +13,8 @@ public class Point {
 
     public Color getColor(){ return color;}
 
-    public int getPosition(){return position;}
+    public int getPosition(){
+        return position;
+    }
 
 }

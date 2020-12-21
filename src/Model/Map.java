@@ -16,6 +16,7 @@ public class Map {
         return Color.values()[a % 4];
     }
     public Point getPointByIndex(int index) {
+        if (index < 0) index += 52;
         return this.points.get(index);
     }
     private void initMap(){
@@ -39,6 +40,7 @@ public class Map {
     public List<AirplaneStack> getAirplaneStacks() {return airplaneStacks;}
     private AirplaneStack getAirplaneStackAtPoint(Point point){
         for (AirplaneStack x : airplaneStacks){
+            if (x.getPoint() == null) continue;
             if (x.getPoint().getPosition() == point.getPosition() && x.getPoint().getColor() == point.getColor()){
                 return x;
             }
@@ -50,6 +52,7 @@ public class Map {
         return getAirplaneStackAtPoint(point);
     }
 
+    public List<Point> getPoints() {return this.points;}
     public int getNumInHanger(Color color) {
         return getAirplaneStacksByColor(color).stream()
                 .filter(a -> (a.isDepartured() && !(a.isFinished())))
@@ -62,4 +65,6 @@ public class Map {
 //    public void removeAirplaneStackAt(Point point){
 //        airplaneStacks.remove(getAirplaneStackAt(point));
 //    }
+
+
 }

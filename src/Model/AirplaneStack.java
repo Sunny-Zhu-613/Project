@@ -32,8 +32,8 @@ public class AirplaneStack {
             this.isEnteredFinalPath = true;
         }
     }
-    public void setCurrentPoint(int position){
-        this.currentPoint.setPosition(position);
+    public void setCurrentPoint(Point point){
+        this.currentPoint = point;
     }
 
     public boolean isDepartured() {

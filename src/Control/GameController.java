@@ -3,6 +3,7 @@ package Control;
 import Model.AirplaneStack;
 import Model.Color;
 import Model.Map;
+import Model.Point;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -93,12 +94,11 @@ public class GameController {
     }
     public boolean moveAttempt(AirplaneStack toMove) {
         if (toMove.getColor() == getCurrentTurn()){
-            if (toMove.getPoint()== null){
-                if (toMove.getColor() == Color.GREEN){toMove.setCurrentPoint(-1);}
-                if (toMove.getColor() == Color.RED){toMove.setCurrentPoint(12);}
-                if (toMove.getColor() == Color.YELLOW){toMove.setCurrentPoint(25);}
-                if (toMove.getColor() == Color.BLUE){toMove.setCurrentPoint(38);}
-
+            if (toMove.getPoint() == null){
+                if (toMove.getColor() == Color.GREEN){toMove.setCurrentPoint(map.getPointByIndex(12));}
+                if (toMove.getColor() == Color.RED){toMove.setCurrentPoint(map.getPointByIndex(25));}
+                if (toMove.getColor() == Color.YELLOW){toMove.setCurrentPoint(map.getPointByIndex(38));}
+                if (toMove.getColor() == Color.BLUE){toMove.setCurrentPoint(map.getPointByIndex(-1));}
             }
             AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
             if (x != null){
@@ -140,7 +140,10 @@ public class GameController {
                         }
                     }
                 }
-                else {toMove.moveBy(4);}
+                else {
+                    System.out.println("Jump!");
+                    toMove.moveBy(4);
+                }
             }
             return true;
         }

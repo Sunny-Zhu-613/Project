@@ -34,6 +34,7 @@ public class GameView {
     private VBox operations;
     private VBox stateColumn;
     private Button rollBtn;
+    private List<Circle> pointList;
     private int stage; //0 for before roll, 1 for before choosing operation, 2 for before choosing chess
 
     public Scene getGameView() {return this.gameView;}
@@ -63,6 +64,74 @@ public class GameView {
         } else return "#000000";
     }
 
+    private void addStackAt(int index, AirplaneStack stack) {
+        if (index < 0) index += 52;
+        StackPane airPlane = new StackPane();
+        airPlane.setUserData(stack);
+
+        for (int j = 0; j < stack.getStackNum(); j++) {
+//            double x = hangerCenterX(index) + 2 * pointRadius, y = hangerCenterY(index) + 2 * pointRadius;
+
+            double x = pointList.get(index).getCenterX(), y = pointList.get(index).getCenterY();
+            System.out.println("index: "+ index + " x: \t" + x + " y: \t"+y);
+
+            Circle planeCircle = new Circle();
+            planeCircle.setFill(Color.valueOf(colorPlaneCSS(stack.getColor())));
+            planeCircle.setRadius(planeRadius);
+
+            airPlane.getChildren().add(planeCircle);
+
+            if (j == 0) {
+                x -= 2 * planeRadius;
+                y -= 2 * planeRadius;
+            } else if (j == 1) {
+                x -= 2 * planeRadius;
+            } else if (j == 2) {
+                y -= 2 * planeRadius;
+            }
+            planeCircle.setCenterX(x);
+            planeCircle.setCenterY(y);
+            airPlane.setLayoutX(x);
+            airPlane.setLayoutY(y);
+
+            map.getChildren().add(airPlane);
+//            planeCircle.setOnMouseClicked(mouseEvent -> {
+//                if (stage != 2) return;
+//                if (air.isDepartured()) {
+////                        if (air.getPoint() != null) updatePoint(air.getPoint().getPosition());
+////                        if (gameController.moveAttempt(air)) updatePoint(air.getPoint().getPosition());
+////                        else return;
+//                    map.getChildren().remove(airPlane);
+//
+//                    gameController.onTurnFinished();
+//                    stateColumnUpdate();
+//                    operations.getChildren().removeAll(operations.getChildren());
+//                    operations.getChildren().add(rollBtn);
+//                    stage = 0;
+//                    return;
+//                }
+//                if (gameController.departureAttempt(air)) {
+//                    TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
+//                    double deltaX = waitingAreaCenterX(air.getColor()) - planeCircle.getCenterX();
+//                    double deltaY = waitingAreaCenterY(air.getColor()) - planeCircle.getCenterY();
+//
+//                    departure.setByX(deltaX);
+//                    departure.setByY(deltaY);
+//
+//                    departure.play();
+//
+//                    gameController.onTurnFinished();
+//                    stateColumnUpdate();
+//                    operations.getChildren().removeAll(operations.getChildren());
+//                    operations.getChildren().add(rollBtn);
+//
+//                    stage = 0;
+//                }
+//            });
+
+        }
+    }
+
     private List<StackPane> hangers_planes() {
         List<StackPane> allPlanes = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
@@ -83,9 +152,13 @@ public class GameView {
                 planeCircle.setOnMouseClicked(mouseEvent -> {
                     if (stage != 2) return;
                     if (air.isDepartured()) {
-                        if (air.getPoint() != null) updatePoint(air.getPoint().getPosition());
-                        if (gameController.moveAttempt(air)) updatePoint(air.getPoint().getPosition());
-                        else return;
+                        if (air.getPoint() != null)
+                            System.out.println("Original: " + air.getPoint().getPosition());
+                        if (gameController.moveAttempt(air)) {
+                            map.getChildren().remove(airPlane);
+                            System.out.println("Target: " + air.getPoint().getPosition());
+                            addStackAt(air.getPoint().getPosition(), air);
+                        }
 
                         gameController.onTurnFinished();
                         stateColumnUpdate();
@@ -191,7 +264,7 @@ public class GameView {
     private Pane initialMap() {
         Pane map = new Pane();
 
-        List<Circle> pointList = new ArrayList<>();
+        pointList = new ArrayList<>();
         pointList.addAll(this.pointEdge(4, 14, 4, 11, 0));
         pointList.addAll(this.pointEdge(3, 10, 0, 10, 4));
         pointList.addAll(this.pointEdge(0, 9, 0, 4, 8));
@@ -243,47 +316,47 @@ public class GameView {
         return map;
     }
 
-    private void updatePoint(int index) {
-        this.map.getChildren().remove(this.map.lookup("Stack_" + index));
-
-        StackPane airplanes = new StackPane();
-        airplanes.setId("Stack_" + index);
-
-        Circle point = (Circle) this.map.lookup("Point_" + index);
-        double x = point.getCenterX() - planeRadius, y = point.getCenterY() - planeRadius;
-
-        airplanes.setLayoutX(x);
-        airplanes.setLayoutY(y);
-
-        AirplaneStack stack = gameController.getMap().getAirplaneStackAt(index);
-        int number = stack.getStackNum();
-
-        for (int j = 0; j < number; j++) {
-            x = point.getCenterX(); y = point.getCenterY();
-            if (j == 3) {
-                x += planeRadius;
-                y += planeRadius;
-            } else if (j == 1) {
-                x += planeRadius;
-            } else if (j == 2) {
-                y += planeRadius;
-            }
-            Circle plane = new Circle();
-            plane.setCenterX(x);
-            plane.setCenterY(y);
-            plane.setFill(Color.valueOf(colorPlaneCSS(stack.getColor())));
-            airplanes.getChildren().add(plane);
-        }
-
-        airplanes.setOnMouseClicked(mouseEvent -> {
-            stage = 0;
-            operations.getChildren().removeAll(operations.getChildren());
-            operations.getChildren().add(rollBtn);
-            gameController.onTurnFinished();
-            stateColumnUpdate();
-        });
-
-    }
+//    private void updatePoint(int index) {
+//        this.map.getChildren().remove(this.map.lookup("Stack_" + index));
+//
+//        StackPane airplanes = new StackPane();
+//        airplanes.setId("Stack_" + index);
+//
+//        Circle point = (Circle) this.map.lookup("Point_" + index);
+//        double x = point.getCenterX() - planeRadius, y = point.getCenterY() - planeRadius;
+//
+//        airplanes.setLayoutX(x);
+//        airplanes.setLayoutY(y);
+//
+//        AirplaneStack stack = gameController.getMap().getAirplaneStackAt(index);
+//        int number = stack.getStackNum();
+//
+//        for (int j = 0; j < number; j++) {
+//            x = point.getCenterX(); y = point.getCenterY();
+//            if (j == 3) {
+//                x += planeRadius;
+//                y += planeRadius;
+//            } else if (j == 1) {
+//                x += planeRadius;
+//            } else if (j == 2) {
+//                y += planeRadius;
+//            }
+//            Circle plane = new Circle();
+//            plane.setCenterX(x);
+//            plane.setCenterY(y);
+//            plane.setFill(Color.valueOf(colorPlaneCSS(stack.getColor())));
+//            airplanes.getChildren().add(plane);
+//        }
+//
+//        airplanes.setOnMouseClicked(mouseEvent -> {
+//            stage = 0;
+//            operations.getChildren().removeAll(operations.getChildren());
+//            operations.getChildren().add(rollBtn);
+//            gameController.onTurnFinished();
+//            stateColumnUpdate();
+//        });
+//
+//    }
 
     private void stateColumnUpdate() {
         stateColumn.getChildren().removeAll(stateColumn.getChildren());
@@ -364,7 +437,7 @@ public class GameView {
                 return;
             } else if (movableNum != 0) {
                 operations.getChildren().add(addBtn);
-                operations.getChildren().add(minusBtn);
+                if (num1 != num2) operations.getChildren().add(minusBtn);
                 operations.getChildren().add(timesBtn);
                 if (num1 % num2 == 0 || num2 % num1 == 0) operations.getChildren().add(divideBtn);
 
