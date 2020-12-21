@@ -97,10 +97,10 @@ public class GameController {
     public boolean moveAttempt(AirplaneStack toMove) {
         if (toMove.getColor() == getCurrentTurn()){
             if (toMove.getPoint() == null){
-                if (toMove.getColor() == Color.GREEN){toMove.setCurrentPoint(map.getPointByIndex(12));}
-                if (toMove.getColor() == Color.RED){toMove.setCurrentPoint(map.getPointByIndex(25));}
-                if (toMove.getColor() == Color.YELLOW){toMove.setCurrentPoint(map.getPointByIndex(38));}
-                if (toMove.getColor() == Color.BLUE){toMove.setCurrentPoint(map.getPointByIndex(-1));}
+                if (toMove.getColor() == Color.GREEN){toMove.setCurrentPoint(map.getPointByIndex(13));}
+                if (toMove.getColor() == Color.RED){toMove.setCurrentPoint(map.getPointByIndex(26));}
+                if (toMove.getColor() == Color.YELLOW){toMove.setCurrentPoint(map.getPointByIndex(39));}
+                if (toMove.getColor() == Color.BLUE){toMove.setCurrentPoint(map.getPointByIndex(52));}
             }
             AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
             if (x != null){

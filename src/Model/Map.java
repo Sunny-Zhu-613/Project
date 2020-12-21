@@ -16,7 +16,6 @@ public class Map {
         return Color.values()[a % 4];
     }
     public Point getPointByIndex(int index) {
-        if (index < 0) index += 52;
         return this.points.get(index);
     }
     private void initMap(){

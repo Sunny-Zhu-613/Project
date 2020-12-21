@@ -19,11 +19,15 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GameView {
+public class GameView implements java.io.Serializable {
     private double height, width;
     private static final double pointRadius = 20.0;
     private static final double planeRadius = 0.5 * pointRadius;
@@ -367,6 +371,23 @@ public class GameView {
         });
 
         Button saveBtn = new Button("save");
+        saveBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    FileOutputStream fileOut =
+                            new FileOutputStream("./save.greatAeroplane");
+                    ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                    out.writeObject(gameView);
+                    out.close();
+                    fileOut.close();
+                    System.out.printf("Game saved to save.greatAeroplane");
+                } catch (IOException i) {
+                    i.printStackTrace();
+                }
+            }
+        });
+
         stateColumn.getChildren().add(restartBtn);
         stateColumn.getChildren().add(saveBtn);
 
