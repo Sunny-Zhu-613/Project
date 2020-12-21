@@ -5,7 +5,9 @@ import Model.Color;
 import Model.Map;
 import Model.Point;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class GameController {
     private Map map;
@@ -149,6 +151,14 @@ public class GameController {
         }
         return false;
     }
-
-
+    public boolean isCompleted(){
+        List<AirplaneStack> a = map.getAirplaneStacks().stream().filter(s -> !s.isFinished()).collect(Collectors.toList());
+        Color x = a.get(0).getColor();
+        for (AirplaneStack b : a){
+            if (b.getColor() != x){
+                return false;
+            }
+        }
+        return true;
+    }
 }
