@@ -95,12 +95,13 @@ public class GameView {
             airPlane.setLayoutY(y);
 
             map.getChildren().add(airPlane);
-//            planeCircle.setOnMouseClicked(mouseEvent -> {
-//                if (stage != 2) return;
-//                if (air.isDepartured()) {
-////                        if (air.getPoint() != null) updatePoint(air.getPoint().getPosition());
-////                        if (gameController.moveAttempt(air)) updatePoint(air.getPoint().getPosition());
-////                        else return;
+            planeCircle.setOnMouseClicked(mouseEvent -> {
+                if (stage != 2) return;
+
+//                if (stack.getPoint() != null)
+//                if (gameController.moveAttempt(stack)) {
+//
+//                }
 //                    map.getChildren().remove(airPlane);
 //
 //                    gameController.onTurnFinished();
@@ -110,24 +111,7 @@ public class GameView {
 //                    stage = 0;
 //                    return;
 //                }
-//                if (gameController.departureAttempt(air)) {
-//                    TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
-//                    double deltaX = waitingAreaCenterX(air.getColor()) - planeCircle.getCenterX();
-//                    double deltaY = waitingAreaCenterY(air.getColor()) - planeCircle.getCenterY();
-//
-//                    departure.setByX(deltaX);
-//                    departure.setByY(deltaY);
-//
-//                    departure.play();
-//
-//                    gameController.onTurnFinished();
-//                    stateColumnUpdate();
-//                    operations.getChildren().removeAll(operations.getChildren());
-//                    operations.getChildren().add(rollBtn);
-//
-//                    stage = 0;
-//                }
-//            });
+            });
 
         }
     }
