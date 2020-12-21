@@ -62,14 +62,12 @@ public class GameController {
         System.out.println(minusNumber);
         chosenNumber = minusNumber;
 
-        return;
     }
     public void timesBtnPressed() {
         int timesNumber = Math.min(dieNumber1 * dieNumber2,12);
         System.out.println(timesNumber);
         chosenNumber = timesNumber;
 
-        return;
     }
 
     public void divideBtnPressed() {
@@ -77,12 +75,10 @@ public class GameController {
         System.out.println(divideNumber);
         chosenNumber = divideNumber;
 
-        return;
     }
 
     public void skipBtnPressed() {
 //        this.currentTurn = currentTurn.next();
-        return;
     }
 
     public boolean departureAttempt(AirplaneStack toLiftOff) {
@@ -132,9 +128,6 @@ public class GameController {
             else {
                 toMove.moveBy(chosenNumber);
             }
-<<<<<<< HEAD
-            return true;
-=======
             if (toMove.getColor() == toMove.getPoint().getColor()){
                 if (toMove.getPassLength() == 18 && toMove.getPassLength() == 14){
                     toMove.moveBy(16);
@@ -150,7 +143,7 @@ public class GameController {
                 }
                 else {toMove.moveBy(4);}
             }
->>>>>>> 4bcc29d0925dc9528576c448d31e29ab0874cd5f
+            return true;
         }
         return false;
     }
