@@ -85,6 +85,10 @@ public class GameController {
         return;
     }
 
+    public void skipBtnPressed() {
+        this.currentTurn = currentTurn.next();
+    }
+
     public boolean departureAttempt(AirplaneStack toLiftOff) {
         //legal attempt checking
         //...

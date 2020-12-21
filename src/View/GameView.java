@@ -40,6 +40,7 @@ public class GameView {
     private HBox root;
     private Pane map;
     private VBox operations;
+    private VBox stateColumn;
     private int stage; //0 for before roll, 1 for before choosing operation, 2 for before choosing chess
 
     public Scene getGameView() {return this.gameView;}
@@ -104,6 +105,8 @@ public class GameView {
 //                            System.out.println("(" + deltaX + "," + deltaY + ")");
 
                             departure.play();
+
+                            stage = 0;
                         }
                     }
                 });
@@ -320,20 +323,46 @@ public class GameView {
 
                 gameController.rollBtnPressed();
                 int num1 = gameController.getDieNumber1(), num2 = gameController.getDieNumber2();
-
-                operations.getChildren().add(addBtn);
-                operations.getChildren().add(minusBtn);
-                operations.getChildren().add(timesBtn);
-                if (num1 % num2 == 0 || num2 % num1 == 0) operations.getChildren().add(divideBtn);
-
                 HBox dieNum = new HBox();
                 Label dieNumberLabel = new Label("Die number: (" + num1 + ", " + num2 + ")");
                 dieNumberLabel.setFont(new Font(24));
                 dieNum.getChildren().add(dieNumberLabel);
                 dieNum.setId("dieNum");
-
                 operations.getChildren().add(dieNum);
-                stage = 1;
+
+                int movableNum = gameController.getMap().getAirplaneStacksByColor(gameController.getCurrentTurn()).stream()
+                        .filter(s -> s.isDepartured()).collect(Collectors.toList()).size();
+
+                if (movableNum == 0 && num1 != 6 && num2 != 6) {
+                    Button skip = new Button("skip");
+                    skip.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            operations.getChildren().removeAll(operations.getChildren());
+                            stage = 0;
+                            gameController.skipBtnPressed();
+                            operations.getChildren().add(rollBtn);
+                        }
+                    });
+
+                    operations.getChildren().add(skip);
+
+                    return;
+                } else if (movableNum != 0) {
+                    operations.getChildren().add(addBtn);
+                    operations.getChildren().add(minusBtn);
+                    operations.getChildren().add(timesBtn);
+                    if (num1 % num2 == 0 || num2 % num1 == 0) operations.getChildren().add(divideBtn);
+
+                    stage = 1;
+                    return;
+                }
+
+                Label choosePlane = new Label("Please choose a plane to lift off");
+                choosePlane.setFont(new Font(24));
+                operations.getChildren().add(choosePlane);
+
+                stage = 2;
             }
         });
 
@@ -397,11 +426,14 @@ public class GameView {
         Label choosePlane = new Label("Please choose a plane to move");
         choosePlane.setFont(new Font(24));
 
+        int chosenNumber = gameController.getChosenNumber();
+
+        Label chosenNumberLabel = new Label("Your chosen number is: " + chosenNumber);
+        chosenNumberLabel.setFont(new Font(24));
+
         operations.getChildren().add(choosePlane);
+        operations.getChildren().add(chosenNumberLabel);
         stage = 2;
-
-//        int chosenNumber = gameController.getChosen
-
     }
 
     public GameView(double width, double height) {
@@ -411,11 +443,11 @@ public class GameView {
 
         this.root = new HBox();
 
-        VBox column = stateColumn();
+        this.stateColumn = stateColumn();
         this.map = initialMap();
         VBox operations = operationColumn();
 
-        root.getChildren().addAll(column, this.map, operations);
+        root.getChildren().addAll(stateColumn, this.map, operations);
 
         this.gameView = new Scene(root, width, height);
     }
