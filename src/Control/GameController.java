@@ -1,5 +1,6 @@
 package Control;
 
+import Model.AirplaneStack;
 import Model.Color;
 import Model.Map;
 import View.GameView;
@@ -39,6 +40,9 @@ public class GameController {
             this.currentTurn = currentTurn.next();
             count = 0;
         }
+
+        // *******
+
         return;
     }
 
@@ -66,5 +70,16 @@ public class GameController {
         System.out.println(divideNumber);
 
         return;
+    }
+
+    public boolean departureAttempt(AirplaneStack toLiftOff) {
+        //legal attempt checking
+        //...
+        //return false if illegal;
+        if (toLiftOff.isDepartured() || toLiftOff.getColor() != getCurrentTurn()) return false;
+        if (dieNumber1 != 6 && dieNumber2 != 6) return false;
+        //Lift off
+        toLiftOff.setDepartured();
+        return true;
     }
 }
