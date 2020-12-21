@@ -37,6 +37,7 @@ public class GameView {
     private static double planeRadius = 0.5 * pointRadius;
     private GameController gameController;
     private Scene gameView;
+    private HBox root;
     private Pane map;
 
     public Scene getGameView() {return this.gameView;}
@@ -87,7 +88,6 @@ public class GameView {
                 planeCircle.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-
                         if (gameController.departureAttempt(air)) {
                             TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
                             double deltaX = waitingAreaCenterX(air.getColor()) - planeCircle.getCenterX();
@@ -95,11 +95,11 @@ public class GameView {
 
                             departure.setByX(deltaX);
                             departure.setByY(deltaY);
-                            System.out.println(air.getColor().toString() + " departure:");
-                            System.out.println("From: "+ planeCircle.getCenterX() + ", " + planeCircle.getCenterY());
-                            System.out.println("To: "+ waitingAreaCenterX(air.getColor()) + ", " +
-                                    waitingAreaCenterY(air.getColor()));
-                            System.out.println("(" + deltaX + "," + deltaY + ")");
+//                            System.out.println(air.getColor().toString() + " departure:");
+//                            System.out.println("From: "+ planeCircle.getCenterX() + ", " + planeCircle.getCenterY());
+//                            System.out.println("To: "+ waitingAreaCenterX(air.getColor()) + ", " +
+//                                    waitingAreaCenterY(air.getColor()));
+//                            System.out.println("(" + deltaX + "," + deltaY + ")");
 
                             departure.play();
                         }
@@ -313,6 +313,14 @@ public class GameView {
                 operations.getChildren().add(minusBtn);
                 operations.getChildren().add(timesBtn);
                 if (num1 % num2 == 0) operations.getChildren().add(divideBtn);
+
+                HBox dieNum = new HBox();
+                Label dieNumberLabel = new Label("Die number: (" + num1 + ", " + num2 + ")");
+                dieNumberLabel.setFont(new Font(24));
+                dieNum.getChildren().add(dieNumberLabel);
+                dieNum.setId("dieNum");
+
+                operations.getChildren().add(dieNum);
             }
         });
 
@@ -369,8 +377,7 @@ public class GameView {
         this.width = width;
         this.gameController = new GameController();
 
-        HBox root = new HBox();
-        root.setId("root");
+        this.root = new HBox();
 
         VBox column = stateColumn();
         this.map = initialMap();

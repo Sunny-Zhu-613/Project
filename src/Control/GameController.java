@@ -56,8 +56,8 @@ public class GameController {
         //legal attempt checking
         //...
         //return false if illegal;
-        if (toLiftOff.isDepartured()) return false;
-
+        if (toLiftOff.isDepartured() || toLiftOff.getColor() != getCurrentTurn()) return false;
+        if (dieNumber1 != 6 && dieNumber2 != 6) return false;
         //Lift off
         toLiftOff.setDepartured();
         return true;
