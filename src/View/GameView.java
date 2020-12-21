@@ -1,6 +1,7 @@
 package View;
 
 import Control.GameController;
+import Model.AirplaneStack;
 import Model.Map;
 import Model.Point;
 import javafx.event.ActionEvent;
@@ -21,6 +22,7 @@ import javafx.scene.text.Font;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.min;
@@ -28,8 +30,10 @@ import static java.lang.StrictMath.min;
 public class GameView {
     private double height, width;
     private static double pointRadius = 20.0;
+    private static double planeRadius = 0.5 * pointRadius;
     private GameController gameController;
     private Scene gameView;
+    private Pane map;
 
     public Scene getGameView() {return this.gameView;}
 
@@ -45,6 +49,91 @@ public class GameView {
         } else {
             return "#ADD8E6";
         }
+    }
+    public static String colorPlaneCSS(Model.Color color) {
+        if (color.equals(Model.Color.RED)) {
+            return "#B22222";
+        } else if (color.equals(Model.Color.BLUE)) {
+            return "#1E90FF";
+        } else if (color.equals(Model.Color.GREEN)) {
+            return "#008000";
+        } else if (color.equals(Model.Color.YELLOW)) {
+            return "#FFD700";
+        } else return "#000000";
+    }
+
+    private List<StackPane> hangers_planes() {
+        List<StackPane> allPlanes = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Model.Color color = Model.Color.values()[(i + 1) % 4];
+            List<AirplaneStack> undepartured = gameController.getMap()
+                    .getAirplaneStacksByColor(color)
+                    .stream()
+                    .filter(air -> !(air.isDepartured()))
+                    .collect(Collectors.toList());
+            System.out.println(undepartured);
+            int j = 0;
+            for (AirplaneStack air : undepartured) {
+                StackPane airPlane = new StackPane();
+
+                Circle planeCircle = new Circle();
+                planeCircle.setFill(Color.valueOf(colorPlaneCSS(color)));
+                planeCircle.setRadius(planeRadius);
+//                planeCircle.setCenterX(airPlane.getWidth() / 2);
+//                planeCircle.setCenterY(airPlane.getHeight() / 2);
+                airPlane.getChildren().add(planeCircle);
+
+                //************
+                //add button here
+
+                double x = hangerCenterX(i) + 2 * pointRadius, y = hangerCenterY(i) + 2 * pointRadius;
+                System.out.println(x + " " + y);
+                if (j == 0) {
+                    x -= 2 * planeRadius;
+                    y -= 2 * planeRadius;
+                } else if (j == 1) {
+                    x -= 2 * planeRadius;
+                } else if (j == 2) {
+                    y -= 2 * planeRadius;
+                }
+                airPlane.setLayoutX(x);
+                airPlane.setLayoutY(y);
+
+                allPlanes.add(airPlane);
+                j += 1;
+            }
+        }
+
+        return allPlanes;
+    }
+
+    private static double hangerCenterX(int i) {
+        double x;
+        i %= 4;
+        if (i == 0) {
+            x = 2 * pointRadius;
+        } else if (i == 1) {
+            x = 2 * pointRadius;
+        } else if (i == 2) {
+            x = 12 * 2 * pointRadius;
+        } else {
+            x = 12 * 2 * pointRadius;
+        }
+        return x;
+    }
+    private static double hangerCenterY(int i) {
+        double y;
+        i %= 4;
+        if (i == 0) {
+            y = 12 * 2 * pointRadius;
+        } else if (i == 1) {
+            y = 2 * pointRadius;
+        } else if (i == 2) {
+            y = 2 * pointRadius;
+        } else {
+            y = 12 * 2 * pointRadius;
+        }
+        return y;
     }
 
     private Pane initialMap() {
@@ -73,20 +162,7 @@ public class GameView {
         //Hangars
         List<StackPane> hangers = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            double x, y;
-            if (i == 0) {
-                x = 2 * pointRadius;
-                y = 12 * 2 * pointRadius;
-            } else if (i == 1) {
-                x = 2 * pointRadius;
-                y = 2 * pointRadius;
-            } else if (i == 2) {
-                x = 12 * 2 * pointRadius;
-                y = 2 * pointRadius;
-            } else {
-                x = 12 * 2 * pointRadius;
-                y = 12 * 2 * pointRadius;
-            }
+            double x = hangerCenterX(i), y = hangerCenterY(i);
 
             StackPane hanger = new StackPane();
             hanger.setLayoutX(x);
@@ -95,15 +171,58 @@ public class GameView {
             hangerCircle.setRadius(2 * pointRadius);
             hangerCircle.setFill(Color.valueOf(colorCSS(gameController.getMap().getPointByIndex(i + 1).getColor())));
             hanger.getChildren().add(hangerCircle);
+            hanger.setId("hanger_"+gameController.getMap().getPointByIndex(i + 1).getColor().toString());
 
             hangers.add(hanger);
         }
 
+        int i = 0;
+        for (Circle point: pointList) {
+            point.setId("Point_" + i);
+            map.getChildren().addAll(point);
+            i += 1;
+        }
 
-        map.getChildren().addAll(pointList);
         map.getChildren().addAll(hangers);
 
+        //********* add planes
+        map.getChildren().addAll(hangers_planes());
+
         return map;
+    }
+
+    private void updatePoint(int index) {
+        this.map.getChildren().remove(this.map.lookup("Stack_" + index));
+
+        StackPane airplanes = new StackPane();
+        airplanes.setId("Stack_" + index);
+
+        Circle point = (Circle) this.map.lookup("Point_" + index);
+        double x = point.getCenterX() - planeRadius, y = point.getCenterY() - planeRadius;
+
+        airplanes.setLayoutX(x);
+        airplanes.setLayoutY(y);
+
+        AirplaneStack stack = gameController.getMap().getAirplaneStackAt(index);
+        int number = stack.getStackNum();
+
+        for (int j = 0; j < number; j++) {
+            x = point.getCenterX(); y = point.getCenterY();
+            if (j == 3) {
+                x += planeRadius;
+                y += planeRadius;
+            } else if (j == 1) {
+                x += planeRadius;
+            } else if (j == 2) {
+                y += planeRadius;
+            }
+            Circle plane = new Circle();
+            plane.setCenterX(x);
+            plane.setCenterY(y);
+            plane.setFill(Color.valueOf(colorPlaneCSS(stack.getColor())));
+            airplanes.getChildren().add(plane);
+        }
+
     }
 
     private VBox stateColumn() {
@@ -208,24 +327,13 @@ public class GameView {
         root.setId("root");
 
         VBox column = stateColumn();
-        Pane map = initialMap();
+        this.map = initialMap();
         VBox operations = operationColumn();
 
-        root.getChildren().addAll(column, map, operations);
+        root.getChildren().addAll(column, this.map, operations);
 
         this.gameView = new Scene(root, width, height);
     }
-
-//    public List<Circle> finalTrack() {
-//        List<Circle> finalTrack = new ArrayList<>();
-//
-//        Model.Color color = gameController.getMap().getPointByIndex(10).getColor();
-//        for (int i = 0; i < 6; i++) {
-//
-//        }
-//
-//        return finalTrack;
-//    }
 
     public List<Circle> pointEdge(int startX, int startY, int endX, int endY, int index) {
         //X, Y from 0 to 14
@@ -259,9 +367,9 @@ public class GameView {
             }
             point.setCenterX(x); point.setCenterY(y);
             Point p = this.gameController.getMap().getPointByIndex(index);
-            if (index >= 52) {
-                System.out.println(p.getColor().toString());
-            }
+//            if (index >= 52) {
+//                System.out.println(p.getColor().toString());
+//            }
 
             point.setFill(Color.valueOf(colorCSS(p.getColor())));
             point.setUserData(p);

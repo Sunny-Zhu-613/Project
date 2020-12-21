@@ -31,6 +31,8 @@ public class GameController {
         this.dieNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
         System.out.println("(" + dieNumber1 + ", " + dieNumber2 + ")");
 
+        // *******
+
         return;
     }
 

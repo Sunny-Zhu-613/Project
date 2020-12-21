@@ -2,14 +2,13 @@ package Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Map {
     List<Point> points;
-    List<Player> players;
     List<AirplaneStack> airplaneStacks;
     public Map(){
         this.points = new ArrayList<>();
-        this.players = new ArrayList<>();
         this.airplaneStacks = new ArrayList<>();
         initMap();
     }
@@ -34,14 +33,10 @@ public class Map {
             }
         }
     }
-
-    public void addPlayers(Player player){
-        players.add(player);
-    }
     public void addAirplaneStacks(AirplaneStack airplaneStack){
         airplaneStacks.add(airplaneStack);
     }
-    public AirplaneStack getAirplaneStackAt(Point point){
+    private AirplaneStack getAirplaneStackAtPoint(Point point){
         for (AirplaneStack x : airplaneStacks){
             if (x.getPoint().getPosition() == point.getPosition() && x.getPoint().getColor() == point.getColor()){
                 return x;
@@ -49,7 +44,15 @@ public class Map {
         }
         return null;
     }
-    public void removeAirplaneStackAt(Point point){
-        airplaneStacks.remove(getAirplaneStackAt(point));
+    public AirplaneStack getAirplaneStackAt(int index) {
+        Point point = getPointByIndex(index);
+        return getAirplaneStackAtPoint(point);
     }
+
+    public List<AirplaneStack> getAirplaneStacksByColor(Color color) {
+        return this.airplaneStacks.stream().filter(s -> (s.getColor() == color)).collect(Collectors.toList());
+    }
+//    public void removeAirplaneStackAt(Point point){
+//        airplaneStacks.remove(getAirplaneStackAt(point));
+//    }
 }

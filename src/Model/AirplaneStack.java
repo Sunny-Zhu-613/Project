@@ -2,7 +2,7 @@ package Model;
 
 public class AirplaneStack {
     private final Color color;
-    private boolean isDeparted;
+    private boolean isDepartured;
     private boolean isFinished;
     private boolean isEnteredFinalPath;
     private int passLength;
@@ -11,7 +11,7 @@ public class AirplaneStack {
 
     public AirplaneStack(Color color){
         this.color = color;
-        isDeparted = false;
+        isDepartured = false;
         isFinished = false;
         isEnteredFinalPath = false;
         stackNum = 1;
@@ -21,8 +21,8 @@ public class AirplaneStack {
     public void setStackNum(int stackNum){
         this.stackNum = stackNum;
     }
-    public void setDeparted(){
-        this.isDeparted = true;
+    public void setDepartured(){
+        this.isDepartured = true;
     }
     public void setFinished(){
         this.isFinished = true;
@@ -33,8 +33,8 @@ public class AirplaneStack {
         }
     }
 
-    public boolean isDeparted() {
-        return isDeparted;
+    public boolean isDepartured() {
+        return isDepartured;
     }
 
     public boolean isFinished() {
@@ -46,7 +46,7 @@ public class AirplaneStack {
     }
 
     public void update(int passLength){
-        if (!isDeparted && passLength > 0){
+        if (!isDepartured && passLength > 0){
             this.passLength = passLength;
             setEnteredFinalPath();
             if (isEnteredFinalPath){currentPoint = new Point(Color.BLANK, passLength - 51);}
@@ -68,11 +68,13 @@ public class AirplaneStack {
     }
 
     public void moveBy(int steps){
-        if (!isDeparted && steps > 0){
+        if (!isDepartured && steps > 0){
             this.passLength = passLength + steps;
             update(this.passLength);
         }
     }
 
-    public Point getPoint(){return currentPoint;}
+    public Point getPoint() {return currentPoint;}
+    public Color getColor() {return color;}
+    public int getStackNum() {return this.stackNum;}
 }
