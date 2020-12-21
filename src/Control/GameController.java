@@ -108,10 +108,10 @@ public class GameController {
                     int a = x.getStackNum();
                     map.getAirplaneStacks().remove(x);
                     toMove.setStackNum(toMove.getStackNum()+a);
-                    toMove.moveBy(chosenNumber);
+                    toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + chosenNumber));
                 }
                 if (x.getColor() != toMove.getColor()){
-                    toMove.moveBy(chosenNumber);
+                    toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + chosenNumber));
                     while (x.getStackNum() > 0 && toMove.getStackNum() > 0){
                         int BattleNumber1 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
                         int BattleNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
@@ -127,11 +127,11 @@ public class GameController {
                 }
             }
             else {
-                toMove.moveBy(chosenNumber);
+                toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + chosenNumber));
             }
             if (toMove.getColor() == toMove.getPoint().getColor()){
                 if (toMove.getPassLength() == 18 && toMove.getPassLength() == 14){
-                    toMove.moveBy(16);
+                    toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + 16));
                     for (AirplaneStack stack : map.getAirplaneStacks()){
                         if (stack.getColor() == Color.shortcut(toMove.getColor()) && stack.getPassLength() == 54){
                             int n = stack.getStackNum();
@@ -144,7 +144,7 @@ public class GameController {
                 }
                 else {
                     System.out.println("Jump!");
-                    toMove.moveBy(4);
+                    toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + 4));
                 }
             }
             return true;
