@@ -20,7 +20,7 @@ public class MainController {
 //        Parent root = FXMLLoader.load(getClass().getResource("/View/GameView.fxml"));
         newStage.setTitle("Aeroplane");
 //        newStage.setScene(new Scene(root, 600, 600));
-        GameView gameView = new GameView(1000, 600);
+        GameView gameView = new GameView(1200, 600);
         newStage.setScene(gameView.getGameView());
 
         Aeroplane.switchStage(newStage);
