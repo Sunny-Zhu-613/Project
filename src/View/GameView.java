@@ -19,11 +19,15 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GameView {
+public class GameView implements java.io.Serializable {
     private double height, width;
     private static final double pointRadius = 20.0;
     private static final double planeRadius = 0.5 * pointRadius;
@@ -94,40 +98,31 @@ public class GameView {
             airPlane.setLayoutX(x);
             airPlane.setLayoutY(y);
 
+            map.getChildren().remove(airPlane);
             map.getChildren().add(airPlane);
-//            planeCircle.setOnMouseClicked(mouseEvent -> {
-//                if (stage != 2) return;
-//                if (air.isDepartured()) {
-////                        if (air.getPoint() != null) updatePoint(air.getPoint().getPosition());
-////                        if (gameController.moveAttempt(air)) updatePoint(air.getPoint().getPosition());
-////                        else return;
+            planeCircle.setOnMouseClicked(mouseEvent -> {
+                if (stage != 2) return;
+
+                if (gameController.moveAttempt(stack)) {
 //                    map.getChildren().remove(airPlane);
-//
-//                    gameController.onTurnFinished();
-//                    stateColumnUpdate();
-//                    operations.getChildren().removeAll(operations.getChildren());
-//                    operations.getChildren().add(rollBtn);
-//                    stage = 0;
-//                    return;
-//                }
-//                if (gameController.departureAttempt(air)) {
-//                    TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
-//                    double deltaX = waitingAreaCenterX(air.getColor()) - planeCircle.getCenterX();
-//                    double deltaY = waitingAreaCenterY(air.getColor()) - planeCircle.getCenterY();
-//
-//                    departure.setByX(deltaX);
-//                    departure.setByY(deltaY);
-//
-//                    departure.play();
-//
-//                    gameController.onTurnFinished();
-//                    stateColumnUpdate();
-//                    operations.getChildren().removeAll(operations.getChildren());
-//                    operations.getChildren().add(rollBtn);
-//
-//                    stage = 0;
-//                }
-//            });
+                    TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
+                    double deltaX = pointList.get(stack.getPoint().getPosition()).getCenterX() - planeCircle.getCenterX();
+                    double deltaY = pointList.get(stack.getPoint().getPosition()).getCenterY() - planeCircle.getCenterY();
+
+                    departure.setByX(deltaX);
+                    departure.setByY(deltaY);
+
+                    departure.play();
+
+                    addStackAt(stack.getPoint().getPosition(), stack);
+                    gameController.onTurnFinished();
+                    stateColumnUpdate();
+                    operations.getChildren().removeAll(operations.getChildren());
+                    operations.getChildren().add(rollBtn);
+                    stage = 0;
+                    return;
+                }
+            });
 
         }
     }
@@ -383,6 +378,23 @@ public class GameView {
         });
 
         Button saveBtn = new Button("save");
+        saveBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    FileOutputStream fileOut =
+                            new FileOutputStream("./save.greatAeroplane");
+                    ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                    out.writeObject(gameView);
+                    out.close();
+                    fileOut.close();
+                    System.out.printf("Game saved to save.greatAeroplane");
+                } catch (IOException i) {
+                    i.printStackTrace();
+                }
+            }
+        });
+
         stateColumn.getChildren().add(restartBtn);
         stateColumn.getChildren().add(saveBtn);
 
