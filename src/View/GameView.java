@@ -312,7 +312,7 @@ public class GameView {
                 operations.getChildren().add(addBtn);
                 operations.getChildren().add(minusBtn);
                 operations.getChildren().add(timesBtn);
-                if (num1 % num2 == 0) operations.getChildren().add(divideBtn);
+                if (num1 % num2 == 0 || num2 % num1 == 0) operations.getChildren().add(divideBtn);
 
                 HBox dieNum = new HBox();
                 Label dieNumberLabel = new Label("Die number: (" + num1 + ", " + num2 + ")");
