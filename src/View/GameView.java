@@ -41,6 +41,7 @@ public class GameView {
     private Pane map;
     private VBox operations;
     private VBox stateColumn;
+    private Button rollBtn;
     private int stage; //0 for before roll, 1 for before choosing operation, 2 for before choosing chess
 
     public Scene getGameView() {return this.gameView;}
@@ -79,7 +80,6 @@ public class GameView {
                     .stream()
                     .filter(air -> !(air.isDepartured()))
                     .collect(Collectors.toList());
-//            System.out.println(undepartured);
             int j = 0;
             for (AirplaneStack air : undepartured) {
                 StackPane airPlane = new StackPane();
@@ -91,6 +91,19 @@ public class GameView {
                 planeCircle.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
+                        if (stage != 2) return;
+                        if (air.isDepartured()) {
+                            if (air.getPoint() != null) updatePoint(air.getPoint().getPosition());
+                            if (gameController.moveAttempt(air)) updatePoint(air.getPoint().getPosition());
+                            else return;
+
+                            gameController.onTurnFinished();
+                            stateColumnUpdate();
+                            operations.getChildren().removeAll(operations.getChildren());
+                            operations.getChildren().add(rollBtn);
+                            stage = 0;
+                            return;
+                        }
                         if (gameController.departureAttempt(air)) {
                             TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
                             double deltaX = waitingAreaCenterX(air.getColor()) - planeCircle.getCenterX();
@@ -98,15 +111,16 @@ public class GameView {
 
                             departure.setByX(deltaX);
                             departure.setByY(deltaY);
-//                            System.out.println(air.getColor().toString() + " departure:");
-//                            System.out.println("From: "+ planeCircle.getCenterX() + ", " + planeCircle.getCenterY());
-//                            System.out.println("To: "+ waitingAreaCenterX(air.getColor()) + ", " +
-//                                    waitingAreaCenterY(air.getColor()));
-//                            System.out.println("(" + deltaX + "," + deltaY + ")");
 
                             departure.play();
 
+                            gameController.onTurnFinished();
+                            stateColumnUpdate();
+                            operations.getChildren().removeAll(operations.getChildren());
+                            operations.getChildren().add(rollBtn);
+
                             stage = 0;
+                            return;
                         }
                     }
                 });
@@ -114,7 +128,6 @@ public class GameView {
                 airPlane.getChildren().add(planeCircle);
 
                 double x = hangerCenterX(i) + 2 * pointRadius, y = hangerCenterY(i) + 2 * pointRadius;
-//                System.out.println(x + " " + y);
                 if (j == 0) {
                     x -= 2 * planeRadius;
                     y -= 2 * planeRadius;
@@ -279,42 +292,66 @@ public class GameView {
             public void handle(MouseEvent mouseEvent) {
                 stage = 0;
                 operations.getChildren().removeAll(operations.getChildren());
-                Button rollBtn = new Button("Roll!"); rollBtn.setId("rollBtn");
                 operations.getChildren().add(rollBtn);
+                gameController.onTurnFinished();
+                stateColumnUpdate();
             }
         });
 
     }
 
-    private VBox stateColumn() {
-        VBox column = new VBox();
+    private void stateColumnUpdate() {
+        stateColumn.getChildren().removeAll(stateColumn.getChildren());
 
         Button restartBtn = new Button("restart");
+        restartBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.out.println("\n\n\n\n Restarted!\n");
+
+                gameController = new GameController();
+                rollBtn = new Button("Roll!");
+                height = height;
+                width = width;
+                gameController = new GameController();
+
+                root = new HBox();
+
+                stateColumn = new VBox();
+                stateColumnUpdate();
+                map = initialMap();
+                VBox operations = operationColumn();
+
+                root.getChildren().addAll(stateColumn, map, operations);
+
+                gameView.setRoot(root);
+//                gameView = new Scene(root, width, height);
+            }
+        });
+
         Button saveBtn = new Button("save");
-        column.getChildren().add(restartBtn);
-        column.getChildren().add(saveBtn);
+        stateColumn.getChildren().add(restartBtn);
+        stateColumn.getChildren().add(saveBtn);
 
         HBox labels = new HBox();
         Label currentColorLabel = new Label("Current Player: ");
         currentColorLabel.setFont(new Font(24));
-        Label currentColor = new Label(this.gameController.getCurrentTurn().toString());
+        Label currentColor = new Label(String.format("%7s", this.gameController.getCurrentTurn().toString()));
         currentColor.setTextFill(Color.valueOf(colorCSS(this.gameController.getCurrentTurn())));
         currentColor.setFont(new Font(24));
         labels.getChildren().addAll(currentColorLabel, currentColor);
 
-        column.getChildren().add(labels);
-
-        return column;
+        stateColumn.getChildren().add(labels);
     }
 
     private VBox operationColumn() {
         this.operations = new VBox();
 
-        Button rollBtn = new Button("Roll!"); rollBtn.setId("rollBtn");
         Button addBtn = new Button("+"); addBtn.setId("addBtn");
         Button minusBtn = new Button("-"); minusBtn.setId("minusBtn");
         Button timesBtn = new Button("*"); timesBtn.setId("timesBtn");
         Button divideBtn = new Button("/"); divideBtn.setId("divideBtn");
+        Button liftOffBtn = new Button("Lift Off!");
 
         rollBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -342,6 +379,8 @@ public class GameView {
                             stage = 0;
                             gameController.skipBtnPressed();
                             operations.getChildren().add(rollBtn);
+                            gameController.onTurnFinished();
+                            stateColumnUpdate();
                         }
                     });
 
@@ -353,6 +392,10 @@ public class GameView {
                     operations.getChildren().add(minusBtn);
                     operations.getChildren().add(timesBtn);
                     if (num1 % num2 == 0 || num2 % num1 == 0) operations.getChildren().add(divideBtn);
+
+                    if (gameController.getMap().getNumInHanger(gameController.getCurrentTurn()) != 0
+                            && (num1 == 6 || num2 == 6))
+                        operations.getChildren().add(liftOffBtn);
 
                     stage = 1;
                     return;
@@ -413,6 +456,16 @@ public class GameView {
 //                operations.getChildren().add(rollBtn);
             }
         });
+        liftOffBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Label choosePlane = new Label("Please choose a plane to lift off");
+                choosePlane.setFont(new Font(24));
+                operations.getChildren().add(choosePlane);
+
+                stage = 2;
+            }
+        });
 
         operations.getChildren().add(rollBtn);
         stage = 0;
@@ -437,13 +490,16 @@ public class GameView {
     }
 
     public GameView(double width, double height) {
+
+        this.rollBtn = new Button("Roll!");
         this.height = height;
         this.width = width;
         this.gameController = new GameController();
 
         this.root = new HBox();
 
-        this.stateColumn = stateColumn();
+        this.stateColumn = new VBox();
+        stateColumnUpdate();
         this.map = initialMap();
         VBox operations = operationColumn();
 
@@ -470,7 +526,6 @@ public class GameView {
         }
         if (start < end) end += 1;
         else end -= 1;
-//        System.out.println(start + " " + end);
         while (start != end) {
             Circle point = new Circle();
             point.setRadius(pointRadius);
@@ -484,15 +539,11 @@ public class GameView {
             }
             point.setCenterX(x); point.setCenterY(y);
             Point p = this.gameController.getMap().getPointByIndex(index);
-//            if (index >= 52) {
-//                System.out.println(p.getColor().toString());
-//            }
 
             point.setFill(Color.valueOf(colorCSS(p.getColor())));
             point.setUserData(p);
             edge.add(point);
 
-//            System.out.println(start + " " + end + " " + x + ", " + y);
 
             if (start > end) start -= 1;
             else if (start < end) start += 1;

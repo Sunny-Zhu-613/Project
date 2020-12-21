@@ -81,7 +81,8 @@ public class GameController {
     }
 
     public void skipBtnPressed() {
-        this.currentTurn = currentTurn.next();
+//        this.currentTurn = currentTurn.next();
+        return;
     }
 
     public boolean departureAttempt(AirplaneStack toLiftOff) {
@@ -96,12 +97,13 @@ public class GameController {
     }
 
     public void onTurnFinished(){
+        System.out.println("From " + this.getCurrentTurn() + " to " + this.getCurrentTurn().next());
         if (count >=3){
             this.currentTurn = currentTurn.next();
             count = 0;
         }
     }
-    public void moveAttempt(AirplaneStack toMove){
+    public boolean moveAttempt(AirplaneStack toMove) {
         if (toMove.getColor() == getCurrentTurn()){
             AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
             if (x != null){
@@ -130,9 +132,10 @@ public class GameController {
             else {
                 toMove.moveBy(chosenNumber);
             }
-
+            return true;
         }
-        return;
+        return false;
     }
+
 
 }

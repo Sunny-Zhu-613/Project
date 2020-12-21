@@ -5,7 +5,7 @@ public enum Color {
     // BLANK for FinalPath
     public Color next()
     {
-        return values()[(this.ordinal()+1) % values().length];
+        return values()[(this.ordinal()+1) % 4];
     }
 }
 

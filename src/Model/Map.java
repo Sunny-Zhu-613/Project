@@ -50,6 +50,12 @@ public class Map {
         return getAirplaneStackAtPoint(point);
     }
 
+    public int getNumInHanger(Color color) {
+        return getAirplaneStacksByColor(color).stream()
+                .filter(a -> (a.isDepartured() && !(a.isFinished())))
+                .collect(Collectors.toList())
+                .size();
+    }
     public List<AirplaneStack> getAirplaneStacksByColor(Color color) {
         return this.airplaneStacks.stream().filter(s -> (s.getColor() == color)).collect(Collectors.toList());
     }
