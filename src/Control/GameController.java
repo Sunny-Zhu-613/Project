@@ -94,24 +94,40 @@ public class GameController {
             count = 0;
         }
     }
+    public int targetPosition(AirplaneStack stack, int chosenNumber) {
+        int currentPosition = stack.getPoint().getPosition();
+        if (stack.getPassLength() + chosenNumber < 50) return (currentPosition+chosenNumber) % 52;
+        else if (stack.getColor() == Color.GREEN) {
+            return (currentPosition + chosenNumber - 52) + 52;
+        } else if (stack.getColor() == Color.RED) {
+            return (currentPosition + chosenNumber - 52) + 58;
+        } else if (stack.getColor() == Color.YELLOW) {
+            return (currentPosition + chosenNumber - 52) + 64;
+        } else if (stack.getColor() == Color.BLUE) {
+            return (currentPosition + chosenNumber - 52) + 70;
+        }
+
+        return 0;
+    }
     public boolean moveAttempt(AirplaneStack toMove) {
         if (toMove.getColor() == getCurrentTurn()){
             if (toMove.getPoint() == null){
-                if (toMove.getColor() == Color.GREEN){toMove.setCurrentPoint(map.getPointByIndex(12));}
-                if (toMove.getColor() == Color.RED){toMove.setCurrentPoint(map.getPointByIndex(25));}
-                if (toMove.getColor() == Color.YELLOW){toMove.setCurrentPoint(map.getPointByIndex(38));}
-                if (toMove.getColor() == Color.BLUE){toMove.setCurrentPoint(map.getPointByIndex(-1));}
+                if (toMove.getColor() == Color.GREEN){toMove.setCurrentPoint(map.getPointByIndex(13));}
+                if (toMove.getColor() == Color.RED){toMove.setCurrentPoint(map.getPointByIndex(26));}
+                if (toMove.getColor() == Color.YELLOW){toMove.setCurrentPoint(map.getPointByIndex(39));}
+                if (toMove.getColor() == Color.BLUE){toMove.setCurrentPoint(map.getPointByIndex(52));}
             }
-            AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
+//            AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
+            AirplaneStack x = map.getAirplaneStackAt(targetPosition(toMove, chosenNumber));
             if (x != null){
                 if (x.getColor() == toMove.getColor()){
                     int a = x.getStackNum();
                     map.getAirplaneStacks().remove(x);
                     toMove.setStackNum(toMove.getStackNum()+a);
-                    toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + chosenNumber));
+                    toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, chosenNumber)));
                 }
                 if (x.getColor() != toMove.getColor()){
-                    toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + chosenNumber));
+                    toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, chosenNumber)));
                     while (x.getStackNum() > 0 && toMove.getStackNum() > 0){
                         int BattleNumber1 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
                         int BattleNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
@@ -127,11 +143,11 @@ public class GameController {
                 }
             }
             else {
-                toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + chosenNumber));
+                toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, chosenNumber)));
             }
             if (toMove.getColor() == toMove.getPoint().getColor()){
                 if (toMove.getPassLength() == 18 && toMove.getPassLength() == 14){
-                    toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + 16));
+                    toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, 16)));
                     for (AirplaneStack stack : map.getAirplaneStacks()){
                         if (stack.getColor() == Color.shortcut(toMove.getColor()) && stack.getPassLength() == 54){
                             int n = stack.getStackNum();
@@ -144,7 +160,7 @@ public class GameController {
                 }
                 else {
                     System.out.println("Jump!");
-                    toMove.setCurrentPoint(map.getPointByIndex(toMove.getPoint().getPosition() + 4));
+                    toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, 4)));
                 }
             }
             return true;
