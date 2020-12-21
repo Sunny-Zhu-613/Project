@@ -39,6 +39,8 @@ public class GameView {
     private Scene gameView;
     private HBox root;
     private Pane map;
+    private VBox operations;
+    private int stage; //0 for before roll, 1 for before choosing operation, 2 for before choosing chess
 
     public Scene getGameView() {return this.gameView;}
 
@@ -269,6 +271,16 @@ public class GameView {
             airplanes.getChildren().add(plane);
         }
 
+        airplanes.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                stage = 0;
+                operations.getChildren().removeAll(operations.getChildren());
+                Button rollBtn = new Button("Roll!"); rollBtn.setId("rollBtn");
+                operations.getChildren().add(rollBtn);
+            }
+        });
+
     }
 
     private VBox stateColumn() {
@@ -293,7 +305,7 @@ public class GameView {
     }
 
     private VBox operationColumn() {
-        VBox operations = new VBox();
+        this.operations = new VBox();
 
         Button rollBtn = new Button("Roll!"); rollBtn.setId("rollBtn");
         Button addBtn = new Button("+"); addBtn.setId("addBtn");
@@ -321,19 +333,23 @@ public class GameView {
                 dieNum.setId("dieNum");
 
                 operations.getChildren().add(dieNum);
+                stage = 1;
             }
         });
 
+
         // ***************************
         //event handlers for buttons here
+
         addBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 operations.getChildren().removeAll(operations.getChildren());
 
                 gameController.addBtnPressed();
+                operationChosen(operations);
 
-                operations.getChildren().add(rollBtn);
+//                operations.getChildren().add(rollBtn);
             }
         });
         minusBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -342,8 +358,9 @@ public class GameView {
                 operations.getChildren().removeAll(operations.getChildren());
 
                 gameController.minusBtnPressed();
+                operationChosen(operations);
 
-                operations.getChildren().add(rollBtn);
+//                operations.getChildren().add(rollBtn);
             }
         });
         timesBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -352,8 +369,9 @@ public class GameView {
                 operations.getChildren().removeAll(operations.getChildren());
 
                 gameController.timesBtnPressed();
+                operationChosen(operations);
 
-                operations.getChildren().add(rollBtn);
+//                operations.getChildren().add(rollBtn);
             }
         });
         divideBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -362,14 +380,28 @@ public class GameView {
                 operations.getChildren().removeAll(operations.getChildren());
 
                 gameController.divideBtnPressed();
-
-                operations.getChildren().add(rollBtn);
+                operationChosen(operations);
+//                operations.getChildren().add(rollBtn);
             }
         });
 
         operations.getChildren().add(rollBtn);
+        stage = 0;
 
         return operations;
+    }
+
+    private void operationChosen(VBox operations) {
+        operations.getChildren().removeAll(operations.getChildren());
+
+        Label choosePlane = new Label("Please choose a plane to move");
+        choosePlane.setFont(new Font(24));
+
+        operations.getChildren().add(choosePlane);
+        stage = 2;
+
+//        int chosenNumber = gameController.getChosen
+
     }
 
     public GameView(double width, double height) {
