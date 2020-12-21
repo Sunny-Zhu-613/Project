@@ -2,13 +2,10 @@ package View;
 
 import Control.GameController;
 import Model.AirplaneStack;
-import Model.Map;
 import Model.Point;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -20,21 +17,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
-import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import java.util.stream.Collectors;
-
-import static java.lang.StrictMath.abs;
-import static java.lang.StrictMath.min;
 
 public class GameView {
     private double height, width;
-    private static double pointRadius = 20.0;
-    private static double planeRadius = 0.5 * pointRadius;
+    private static final double pointRadius = 20.0;
+    private static final double planeRadius = 0.5 * pointRadius;
     private GameController gameController;
     private Scene gameView;
     private HBox root;
@@ -88,40 +80,36 @@ public class GameView {
                 Circle planeCircle = new Circle();
                 planeCircle.setFill(Color.valueOf(colorPlaneCSS(color)));
                 planeCircle.setRadius(planeRadius);
-                planeCircle.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent mouseEvent) {
-                        if (stage != 2) return;
-                        if (air.isDepartured()) {
-                            if (air.getPoint() != null) updatePoint(air.getPoint().getPosition());
-                            if (gameController.moveAttempt(air)) updatePoint(air.getPoint().getPosition());
-                            else return;
+                planeCircle.setOnMouseClicked(mouseEvent -> {
+                    if (stage != 2) return;
+                    if (air.isDepartured()) {
+                        if (air.getPoint() != null) updatePoint(air.getPoint().getPosition());
+                        if (gameController.moveAttempt(air)) updatePoint(air.getPoint().getPosition());
+                        else return;
 
-                            gameController.onTurnFinished();
-                            stateColumnUpdate();
-                            operations.getChildren().removeAll(operations.getChildren());
-                            operations.getChildren().add(rollBtn);
-                            stage = 0;
-                            return;
-                        }
-                        if (gameController.departureAttempt(air)) {
-                            TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
-                            double deltaX = waitingAreaCenterX(air.getColor()) - planeCircle.getCenterX();
-                            double deltaY = waitingAreaCenterY(air.getColor()) - planeCircle.getCenterY();
+                        gameController.onTurnFinished();
+                        stateColumnUpdate();
+                        operations.getChildren().removeAll(operations.getChildren());
+                        operations.getChildren().add(rollBtn);
+                        stage = 0;
+                        return;
+                    }
+                    if (gameController.departureAttempt(air)) {
+                        TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
+                        double deltaX = waitingAreaCenterX(air.getColor()) - planeCircle.getCenterX();
+                        double deltaY = waitingAreaCenterY(air.getColor()) - planeCircle.getCenterY();
 
-                            departure.setByX(deltaX);
-                            departure.setByY(deltaY);
+                        departure.setByX(deltaX);
+                        departure.setByY(deltaY);
 
-                            departure.play();
+                        departure.play();
 
-                            gameController.onTurnFinished();
-                            stateColumnUpdate();
-                            operations.getChildren().removeAll(operations.getChildren());
-                            operations.getChildren().add(rollBtn);
+                        gameController.onTurnFinished();
+                        stateColumnUpdate();
+                        operations.getChildren().removeAll(operations.getChildren());
+                        operations.getChildren().add(rollBtn);
 
-                            stage = 0;
-                            return;
-                        }
+                        stage = 0;
                     }
                 });
 
@@ -163,7 +151,7 @@ public class GameView {
     private static double waitingAreaCenterY(Model.Color color) {
         double y = 0;
         switch (color){
-            case BLUE -> { y =  29 * pointRadius; }
+            case BLUE -> y =  29 * pointRadius;
             case RED -> { y = pointRadius; }
             case YELLOW -> { y = 23 * pointRadius; }
             case GREEN -> { y = 7 * pointRadius; }
@@ -287,15 +275,12 @@ public class GameView {
             airplanes.getChildren().add(plane);
         }
 
-        airplanes.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                stage = 0;
-                operations.getChildren().removeAll(operations.getChildren());
-                operations.getChildren().add(rollBtn);
-                gameController.onTurnFinished();
-                stateColumnUpdate();
-            }
+        airplanes.setOnMouseClicked(mouseEvent -> {
+            stage = 0;
+            operations.getChildren().removeAll(operations.getChildren());
+            operations.getChildren().add(rollBtn);
+            gameController.onTurnFinished();
+            stateColumnUpdate();
         });
 
     }
@@ -304,29 +289,24 @@ public class GameView {
         stateColumn.getChildren().removeAll(stateColumn.getChildren());
 
         Button restartBtn = new Button("restart");
-        restartBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                System.out.println("\n\n\n\n Restarted!\n");
+        restartBtn.setOnAction(actionEvent -> {
+            System.out.println("\n\n\n\n Restarted!\n");
 
-                gameController = new GameController();
-                rollBtn = new Button("Roll!");
-                height = height;
-                width = width;
-                gameController = new GameController();
+            gameController = new GameController();
+            rollBtn = new Button("Roll!");
+            gameController = new GameController();
 
-                root = new HBox();
+            root = new HBox();
 
-                stateColumn = new VBox();
-                stateColumnUpdate();
-                map = initialMap();
-                VBox operations = operationColumn();
+            stateColumn = new VBox();
+            stateColumnUpdate();
+            map = initialMap();
+            VBox operations = operationColumn();
 
-                root.getChildren().addAll(stateColumn, map, operations);
+            root.getChildren().addAll(stateColumn, map, operations);
 
-                gameView.setRoot(root);
+            gameView.setRoot(root);
 //                gameView = new Scene(root, width, height);
-            }
         });
 
         Button saveBtn = new Button("save");
@@ -353,118 +333,97 @@ public class GameView {
         Button divideBtn = new Button("/"); divideBtn.setId("divideBtn");
         Button liftOffBtn = new Button("Lift Off!");
 
-        rollBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                operations.getChildren().remove(rollBtn);
+        rollBtn.setOnAction(actionEvent -> {
+            operations.getChildren().remove(rollBtn);
 
-                gameController.rollBtnPressed();
-                int num1 = gameController.getDieNumber1(), num2 = gameController.getDieNumber2();
-                HBox dieNum = new HBox();
-                Label dieNumberLabel = new Label("Die number: (" + num1 + ", " + num2 + ")");
-                dieNumberLabel.setFont(new Font(24));
-                dieNum.getChildren().add(dieNumberLabel);
-                dieNum.setId("dieNum");
-                operations.getChildren().add(dieNum);
+            gameController.rollBtnPressed();
+            int num1 = gameController.getDieNumber1(), num2 = gameController.getDieNumber2();
+            HBox dieNum = new HBox();
+            Label dieNumberLabel = new Label("Die number: (" + num1 + ", " + num2 + ")");
+            dieNumberLabel.setFont(new Font(24));
+            dieNum.getChildren().add(dieNumberLabel);
+            dieNum.setId("dieNum");
+            operations.getChildren().add(dieNum);
 
-                int movableNum = gameController.getMap().getAirplaneStacksByColor(gameController.getCurrentTurn()).stream()
-                        .filter(s -> s.isDepartured()).collect(Collectors.toList()).size();
+            int movableNum = (int) gameController.getMap().getAirplaneStacksByColor(gameController.getCurrentTurn()).stream()
+                    .filter(AirplaneStack::isDepartured).count();
 
-                if (movableNum == 0 && num1 != 6 && num2 != 6) {
-                    Button skip = new Button("skip");
-                    skip.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent actionEvent) {
-                            operations.getChildren().removeAll(operations.getChildren());
-                            stage = 0;
-                            gameController.skipBtnPressed();
-                            operations.getChildren().add(rollBtn);
-                            gameController.onTurnFinished();
-                            stateColumnUpdate();
-                        }
-                    });
+            if (movableNum == 0 && num1 != 6 && num2 != 6) {
+                Button skip = new Button("skip");
+                skip.setOnAction(actionEvent1 -> {
+                    operations.getChildren().removeAll(operations.getChildren());
+                    stage = 0;
+                    gameController.skipBtnPressed();
+                    operations.getChildren().add(rollBtn);
+                    gameController.onTurnFinished();
+                    stateColumnUpdate();
+                });
 
-                    operations.getChildren().add(skip);
+                operations.getChildren().add(skip);
 
-                    return;
-                } else if (movableNum != 0) {
-                    operations.getChildren().add(addBtn);
-                    operations.getChildren().add(minusBtn);
-                    operations.getChildren().add(timesBtn);
-                    if (num1 % num2 == 0 || num2 % num1 == 0) operations.getChildren().add(divideBtn);
+                return;
+            } else if (movableNum != 0) {
+                operations.getChildren().add(addBtn);
+                operations.getChildren().add(minusBtn);
+                operations.getChildren().add(timesBtn);
+                if (num1 % num2 == 0 || num2 % num1 == 0) operations.getChildren().add(divideBtn);
 
-                    if (gameController.getMap().getNumInHanger(gameController.getCurrentTurn()) != 0
-                            && (num1 == 6 || num2 == 6))
-                        operations.getChildren().add(liftOffBtn);
+                if (gameController.getMap().getNumInHanger(gameController.getCurrentTurn()) != 0
+                        && (num1 == 6 || num2 == 6))
+                    operations.getChildren().add(liftOffBtn);
 
-                    stage = 1;
-                    return;
-                }
-
-                Label choosePlane = new Label("Please choose a plane to lift off");
-                choosePlane.setFont(new Font(24));
-                operations.getChildren().add(choosePlane);
-
-                stage = 2;
+                stage = 1;
+                return;
             }
+
+            Label choosePlane = new Label("Please choose a plane to lift off");
+            choosePlane.setFont(new Font(24));
+            operations.getChildren().add(choosePlane);
+
+            stage = 2;
         });
 
 
         // ***************************
         //event handlers for buttons here
 
-        addBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                operations.getChildren().removeAll(operations.getChildren());
+        addBtn.setOnAction(actionEvent -> {
+            operations.getChildren().removeAll(operations.getChildren());
 
-                gameController.addBtnPressed();
-                operationChosen(operations);
+            gameController.addBtnPressed();
+            operationChosen(operations);
 
 //                operations.getChildren().add(rollBtn);
-            }
         });
-        minusBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                operations.getChildren().removeAll(operations.getChildren());
+        minusBtn.setOnAction(actionEvent -> {
+            operations.getChildren().removeAll(operations.getChildren());
 
-                gameController.minusBtnPressed();
-                operationChosen(operations);
+            gameController.minusBtnPressed();
+            operationChosen(operations);
 
 //                operations.getChildren().add(rollBtn);
-            }
         });
-        timesBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                operations.getChildren().removeAll(operations.getChildren());
+        timesBtn.setOnAction(actionEvent -> {
+            operations.getChildren().removeAll(operations.getChildren());
 
-                gameController.timesBtnPressed();
-                operationChosen(operations);
+            gameController.timesBtnPressed();
+            operationChosen(operations);
 
 //                operations.getChildren().add(rollBtn);
-            }
         });
-        divideBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                operations.getChildren().removeAll(operations.getChildren());
+        divideBtn.setOnAction(actionEvent -> {
+            operations.getChildren().removeAll(operations.getChildren());
 
-                gameController.divideBtnPressed();
-                operationChosen(operations);
+            gameController.divideBtnPressed();
+            operationChosen(operations);
 //                operations.getChildren().add(rollBtn);
-            }
         });
-        liftOffBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                Label choosePlane = new Label("Please choose a plane to lift off");
-                choosePlane.setFont(new Font(24));
-                operations.getChildren().add(choosePlane);
+        liftOffBtn.setOnAction(actionEvent -> {
+            Label choosePlane = new Label("Please choose a plane to lift off");
+            choosePlane.setFont(new Font(24));
+            operations.getChildren().add(choosePlane);
 
-                stage = 2;
-            }
+            stage = 2;
         });
 
         operations.getChildren().add(rollBtn);
@@ -546,7 +505,7 @@ public class GameView {
 
 
             if (start > end) start -= 1;
-            else if (start < end) start += 1;
+            else start += 1;
 
             index += 1;
         }

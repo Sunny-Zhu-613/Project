@@ -3,12 +3,6 @@ package Control;
 import Model.AirplaneStack;
 import Model.Color;
 import Model.Map;
-import View.GameView;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -47,7 +41,6 @@ public class GameController {
 
         // *******
 
-        return;
     }
 
     public void addBtnPressed() {
@@ -55,7 +48,6 @@ public class GameController {
         System.out.println(addNumber);
         chosenNumber = addNumber;
 
-        return;
     }
     public void minusBtnPressed() {
         int minusNumber = Math.max(dieNumber1, dieNumber2) - Math.min(dieNumber1, dieNumber2);
