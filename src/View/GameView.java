@@ -20,8 +20,10 @@ import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.min;
 
 public class GameView {
     private double height, width;
@@ -62,7 +64,44 @@ public class GameView {
         pointList.addAll(this.pointEdge(10, 11, 10, 14, 43));
         pointList.addAll(this.pointEdge(9, 14, 5, 14, 47));
 
+        //Final Tracks
+        pointList.addAll(this.pointEdge(1, 7, 6, 7, 52));
+        pointList.addAll(this.pointEdge(7, 1, 7, 6, 58));
+        pointList.addAll(this.pointEdge(13, 7, 8, 7, 64));
+        pointList.addAll(this.pointEdge(7, 13, 7, 8, 70));
+
+        //Hangars
+        List<StackPane> hangers = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            double x, y;
+            if (i == 0) {
+                x = 2 * pointRadius;
+                y = 12 * 2 * pointRadius;
+            } else if (i == 1) {
+                x = 2 * pointRadius;
+                y = 2 * pointRadius;
+            } else if (i == 2) {
+                x = 12 * 2 * pointRadius;
+                y = 2 * pointRadius;
+            } else {
+                x = 12 * 2 * pointRadius;
+                y = 12 * 2 * pointRadius;
+            }
+
+            StackPane hanger = new StackPane();
+            hanger.setLayoutX(x);
+            hanger.setLayoutY(y);
+            Circle hangerCircle = new Circle();
+            hangerCircle.setRadius(2 * pointRadius);
+            hangerCircle.setFill(Color.valueOf(colorCSS(gameController.getMap().getPointByIndex(i + 1).getColor())));
+            hanger.getChildren().add(hangerCircle);
+
+            hangers.add(hanger);
+        }
+
+
         map.getChildren().addAll(pointList);
+        map.getChildren().addAll(hangers);
 
         return map;
     }
@@ -91,27 +130,69 @@ public class GameView {
     private VBox operationColumn() {
         VBox operations = new VBox();
 
-        Button rollBtn = new Button("Roll!");
-        rollBtn.setId("rollBtn");
+        Button rollBtn = new Button("Roll!"); rollBtn.setId("rollBtn");
+        Button addBtn = new Button("+"); addBtn.setId("addBtn");
+        Button minusBtn = new Button("-"); minusBtn.setId("minusBtn");
+        Button timesBtn = new Button("*"); timesBtn.setId("timesBtn");
+        Button divideBtn = new Button("/"); divideBtn.setId("divideBtn");
+
         rollBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 operations.getChildren().remove(rollBtn);
-                // ********************************
-                // first roll and then
-                // add the four (three) buttons here
 
                 gameController.rollBtnPressed();
+                int num1 = gameController.getDieNumber1(), num2 = gameController.getDieNumber2();
+
+                operations.getChildren().add(addBtn);
+                operations.getChildren().add(minusBtn);
+                operations.getChildren().add(timesBtn);
+                if (num1 % num2 == 0) operations.getChildren().add(divideBtn);
             }
         });
 
-        Button addBtn = new Button("+");
-        Button minusBtn = new Button("-");
-        Button timesBtn = new Button("*");
-        Button divideBtn = new Button("/");
-
         // ***************************
         //event handlers for buttons here
+        addBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                operations.getChildren().removeAll(operations.getChildren());
+
+                gameController.addBtnPressed();
+
+                operations.getChildren().add(rollBtn);
+            }
+        });
+        minusBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                operations.getChildren().removeAll(operations.getChildren());
+
+                gameController.minusBtnPressed();
+
+                operations.getChildren().add(rollBtn);
+            }
+        });
+        timesBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                operations.getChildren().removeAll(operations.getChildren());
+
+                gameController.timesBtnPressed();
+
+                operations.getChildren().add(rollBtn);
+            }
+        });
+        divideBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                operations.getChildren().removeAll(operations.getChildren());
+
+                gameController.divideBtnPressed();
+
+                operations.getChildren().add(rollBtn);
+            }
+        });
 
         operations.getChildren().add(rollBtn);
 
@@ -134,6 +215,17 @@ public class GameView {
 
         this.gameView = new Scene(root, width, height);
     }
+
+//    public List<Circle> finalTrack() {
+//        List<Circle> finalTrack = new ArrayList<>();
+//
+//        Model.Color color = gameController.getMap().getPointByIndex(10).getColor();
+//        for (int i = 0; i < 6; i++) {
+//
+//        }
+//
+//        return finalTrack;
+//    }
 
     public List<Circle> pointEdge(int startX, int startY, int endX, int endY, int index) {
         //X, Y from 0 to 14
@@ -167,6 +259,9 @@ public class GameView {
             }
             point.setCenterX(x); point.setCenterY(y);
             Point p = this.gameController.getMap().getPointByIndex(index);
+            if (index >= 52) {
+                System.out.println(p.getColor().toString());
+            }
 
             point.setFill(Color.valueOf(colorCSS(p.getColor())));
             point.setUserData(p);

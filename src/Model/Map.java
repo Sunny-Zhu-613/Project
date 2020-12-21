@@ -20,8 +20,13 @@ public class Map {
         return this.points.get(index);
     }
     private void initMap(){
-        for (int i = 1; i <= 52; i++){
+        for (int i = 0; i < 52; i++){
             points.add(new Point(getColorByIndex(i), i));
+        }
+        for (int j = 0; j < 4; j++) {
+            for (int i = 0; i < 6; i++) {
+                points.add(new Point(Color.values()[(j + 2) % 4], i * j + 52));
+            }
         }
         for (int i = 0; i < 4; i++){
             for (int j = 1 ; j <= 4; j++){
