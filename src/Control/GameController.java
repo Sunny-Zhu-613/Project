@@ -17,6 +17,7 @@ public class GameController {
     private Color currentTurn;
     private int dieNumber1, dieNumber2;
     private int count = 0;
+    private int chosenNumber;
 
     public GameController() {
         this.map = new Map();
@@ -27,6 +28,7 @@ public class GameController {
     public Color getCurrentTurn() {return this.currentTurn;}
     public int getDieNumber1() {return this.dieNumber1;}
     public int getDieNumber2() {return this.dieNumber2;}
+    public int getChosenNumber() {return this.chosenNumber;}
 
     public void rollBtnPressed() {
         if (count >=3){
@@ -56,18 +58,21 @@ public class GameController {
     public void addBtnPressed() {
         int addNumber = Math.min(dieNumber1 + dieNumber2,12);
         System.out.println(addNumber);
+        chosenNumber = addNumber;
 
         return;
     }
     public void minusBtnPressed() {
         int minusNumber = Math.max(dieNumber1, dieNumber2) - Math.min(dieNumber1, dieNumber2);
         System.out.println(minusNumber);
+        chosenNumber = minusNumber;
 
         return;
     }
     public void timesBtnPressed() {
         int timesNumber = Math.min(dieNumber1 * dieNumber2,12);
         System.out.println(timesNumber);
+        chosenNumber = timesNumber;
 
         return;
     }
@@ -75,6 +80,7 @@ public class GameController {
     public void divideBtnPressed() {
         int divideNumber = Math.max(dieNumber1, dieNumber2) / Math.min(dieNumber1, dieNumber2);
         System.out.println(divideNumber);
+        chosenNumber = divideNumber;
 
         return;
     }
@@ -89,4 +95,22 @@ public class GameController {
         toLiftOff.setDepartured();
         return true;
     }
+
+    public void moveAttempt(AirplaneStack toMove){
+        if (toMove.getColor() == getCurrentTurn()){
+            AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
+            if (x.getColor() == toMove.getColor()){
+
+            }
+            int a = 0;
+            if (x != null) {
+                a = x.getStackNum();
+                map.getAirplaneStacks().remove(x);
+            }
+            toMove.setStackNum(toMove.getStackNum()+a);
+            toMove.moveBy(chosenNumber);
+        }
+        return;
+    }
+
 }

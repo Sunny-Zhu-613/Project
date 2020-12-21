@@ -36,6 +36,7 @@ public class Map {
     public void addAirplaneStacks(AirplaneStack airplaneStack){
         airplaneStacks.add(airplaneStack);
     }
+    public List<AirplaneStack> getAirplaneStacks() {return airplaneStacks;}
     private AirplaneStack getAirplaneStackAtPoint(Point point){
         for (AirplaneStack x : airplaneStacks){
             if (x.getPoint().getPosition() == point.getPosition() && x.getPoint().getColor() == point.getColor()){
