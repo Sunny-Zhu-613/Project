@@ -32,6 +32,9 @@ public class AirplaneStack {
             this.isEnteredFinalPath = true;
         }
     }
+    public void setCurrentPoint(int position){
+        this.currentPoint.setPosition(position);
+    }
 
     public boolean isDepartured() {
         return isDepartured;
@@ -86,6 +89,7 @@ public class AirplaneStack {
             update(this.passLength);
         }
     }
+
 
     public Point getPoint() {return currentPoint;}
     public Color getColor() {return color;}

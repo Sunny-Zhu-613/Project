@@ -101,6 +101,13 @@ public class GameController {
     }
     public boolean moveAttempt(AirplaneStack toMove) {
         if (toMove.getColor() == getCurrentTurn()){
+            if (toMove.getPoint()== null){
+                if (toMove.getColor() == Color.GREEN){toMove.setCurrentPoint(-1);}
+                if (toMove.getColor() == Color.RED){toMove.setCurrentPoint(12);}
+                if (toMove.getColor() == Color.YELLOW){toMove.setCurrentPoint(25);}
+                if (toMove.getColor() == Color.BLUE){toMove.setCurrentPoint(38);}
+
+            }
             AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
             if (x != null){
                 if (x.getColor() == toMove.getColor()){

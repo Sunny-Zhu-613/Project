@@ -6,8 +6,7 @@ public enum Color {
     public Color next()
     {
         return values()[(this.ordinal()+1) % 4];
-<<<<<<< HEAD
-=======
+
     }
     public static Color shortcut(Color color){
         if (color == GREEN){
@@ -23,7 +22,6 @@ public enum Color {
             return RED;
         }
         return BLANK;
->>>>>>> 4bcc29d0925dc9528576c448d31e29ab0874cd5f
     }
 }
 
