@@ -29,16 +29,23 @@ public class GameController {
     public int getDieNumber2() {return this.dieNumber2;}
 
     public void rollBtnPressed() {
-        this.dieNumber1 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
-        this.dieNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
-        System.out.println("(" + dieNumber1 + ", " + dieNumber2 + ")");
-        int sum = dieNumber1 + dieNumber2;
-        if (sum >= 10){
-            count += 1;
-        }
         if (count >=3){
             this.currentTurn = currentTurn.next();
             count = 0;
+        }
+        else {
+            this.dieNumber1 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+            this.dieNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+            System.out.println("(" + dieNumber1 + ", " + dieNumber2 + ")");
+            int sum = dieNumber1 + dieNumber2;
+
+            if (sum >= 10){
+                count += 1;
+            }
+
+            if (sum < 10){
+                count += 3;
+            }
         }
 
         // *******
