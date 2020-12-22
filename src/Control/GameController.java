@@ -78,8 +78,7 @@ public class GameController {
 
     public boolean departureAttempt(AirplaneStack toLiftOff) {
         //legal attempt checking
-        //...
-        //return false if illegal;
+        System.out.println("Departure Attempt");
         if (toLiftOff.isDepartured() || toLiftOff.getColor() != getCurrentTurn()) return false;
         if (dieNumber1 != 6 && dieNumber2 != 6) return false;
         //Lift off
@@ -88,7 +87,7 @@ public class GameController {
     }
 
     public void onTurnFinished(){
-        System.out.println("From " + this.getCurrentTurn() + " to " + this.getCurrentTurn().next());
+//        System.out.println("From " + this.getCurrentTurn() + " to " + this.getCurrentTurn().next());
         if (count >=3){
             this.currentTurn = currentTurn.next();
             count = 0;
@@ -109,68 +108,6 @@ public class GameController {
 
         return 0;
     }
-    public boolean moveAttempt(AirplaneStack toMove) {
-        if (toMove.getColor() == getCurrentTurn()){
-            if (toMove.getPoint() == null){
-                if (toMove.getColor() == Color.GREEN){toMove.setCurrentPoint(map.getPointByIndex(13));}
-                if (toMove.getColor() == Color.RED){toMove.setCurrentPoint(map.getPointByIndex(26));}
-                if (toMove.getColor() == Color.YELLOW){toMove.setCurrentPoint(map.getPointByIndex(39));}
-                if (toMove.getColor() == Color.BLUE){toMove.setCurrentPoint(map.getPointByIndex(51));}
-            }
-//            AirplaneStack x = map.getAirplaneStackAt(toMove.getPoint().getPosition()+chosenNumber);
-            AirplaneStack x = map.getAirplaneStackAt(targetPosition(toMove, chosenNumber));
-            if (x != null){
-                System.out.println(x.toString());
-                if (x.getColor() == toMove.getColor()){
-                    int a = x.getStackNum();
-                    map.getAirplaneStacks().remove(x);
-
-                    System.out.println("Stack Num += " + a);
-                    toMove.setStackNum(toMove.getStackNum()+a);
-                    toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, chosenNumber)));
-                }
-                if (x.getColor() != toMove.getColor()){
-                    toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, chosenNumber)));
-                    while (x.getStackNum() > 0 && toMove.getStackNum() > 0){
-                        int BattleNumber1 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
-                        int BattleNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
-                        if (BattleNumber1 > BattleNumber2){
-                            x.setStackNum(x.getStackNum()-1);
-                            map.addAirplaneStacks(new AirplaneStack(x.getColor()));
-                        }
-                        if (BattleNumber1 < BattleNumber2){
-                            toMove.setStackNum(toMove.getStackNum()-1);
-                            map.addAirplaneStacks(new AirplaneStack(toMove.getColor()));
-                        }
-                    }
-                }
-            }
-            else {
-                toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, chosenNumber)));
-                System.out.println("Got here at:" + toMove.getPoint().getPosition() + " " + toMove.getPoint().getColor().toString());
-            }
-            if (toMove.getColor() == toMove.getPoint().getColor()){
-                if (toMove.getPassLength() == 18 && toMove.getPassLength() == 14){
-                    toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, 16)));
-                    for (AirplaneStack stack : map.getAirplaneStacks()){
-                        if (stack.getColor() == Color.shortcut(toMove.getColor()) && stack.getPassLength() == 54){
-                            int n = stack.getStackNum();
-                            map.getAirplaneStacks().remove(stack);
-                            for (int i = 0; i < n; i++){
-                                map.getAirplaneStacks().add(new AirplaneStack(stack.getColor()));
-                            }
-                        }
-                    }
-                }
-                else {
-                    System.out.println("Jump!");
-                    toMove.setCurrentPoint(map.getPointByIndex(targetPosition(toMove, 4)));
-                }
-            }
-            return true;
-        }
-        return false;
-    }
     public boolean isCompleted(){
         List<AirplaneStack> a = map.getAirplaneStacks().stream().filter(s -> !s.isFinished()).collect(Collectors.toList());
         Color x = a.get(0).getColor();
@@ -179,6 +116,89 @@ public class GameController {
                 return false;
             }
         }
+        return true;
+    }
+    private void battle(AirplaneStack stack1, AirplaneStack stack2) {
+
+    }
+
+    private void stacking(AirplaneStack stack1, AirplaneStack stack2) {
+        System.out.println(stack1.getColor().toString() + " stacking " + stack1.getStackNum() + " + " + stack2.getStackNum());
+        int num = stack2.getStackNum();
+        stack1.setStackNum(stack1.getStackNum() + num);
+        map.getAirplaneStacks().remove(stack2);
+    }
+    private void landing(AirplaneStack toBeMoved, int targetPosition) {
+        AirplaneStack adversaryOrFriend = map.getAirplaneStackAt(targetPosition);
+        if (adversaryOrFriend != null) {
+            if (adversaryOrFriend.getColor() != toBeMoved.getColor())
+                battle(toBeMoved, adversaryOrFriend);
+            else {
+                System.out.println(adversaryOrFriend.getStackNum());
+                stacking(toBeMoved, adversaryOrFriend);
+            }
+        }
+    }
+    public int moveBy(AirplaneStack toBeMoved, int length) {
+        int targetPosition;
+        int passLength = toBeMoved.getPassLength();
+        if (toBeMoved.getPoint() == null) {
+                if (toBeMoved.getColor() == Color.GREEN){toBeMoved.setCurrentPoint(map.getPointByIndex(12));}
+                if (toBeMoved.getColor() == Color.RED){toBeMoved.setCurrentPoint(map.getPointByIndex(25));}
+                if (toBeMoved.getColor() == Color.YELLOW){toBeMoved.setCurrentPoint(map.getPointByIndex(38));}
+                if (toBeMoved.getColor() == Color.BLUE){toBeMoved.setCurrentPoint(map.getPointByIndex(51));}
+            }
+        int currentPosition = toBeMoved.getPoint().getPosition();
+
+        if (passLength + length < 50) targetPosition = (currentPosition + length) % 52;
+        else if (toBeMoved.getColor() == Color.GREEN) {
+            targetPosition = (currentPosition + length - 52) + 52;
+        } else if (toBeMoved.getColor() == Color.RED) {
+            targetPosition = (currentPosition + length - 52) + 58;
+        } else if (toBeMoved.getColor() == Color.YELLOW) {
+            targetPosition = (currentPosition + length - 52) + 64;
+        } else if (toBeMoved.getColor() == Color.BLUE) {
+            targetPosition = (currentPosition + length - 52) + 70;
+        } else targetPosition = -1; //should never happen
+
+//        toBeMoved.setCurrentPoint(map.getPointByIndex(targetPosition));
+//        toBeMoved.addPathLength(length);
+        return targetPosition;
+    }
+    public boolean moveAttempt(AirplaneStack toBeMoved) {
+        //jump
+        //shortcut
+        //battle
+
+        System.out.println("Move Attempt");
+        if (toBeMoved.getColor() != getCurrentTurn()) return false;
+
+        int targetPosition = moveBy(toBeMoved, chosenNumber);
+        landing(toBeMoved, targetPosition);
+        toBeMoved.setCurrentPoint(map.getPointByIndex(targetPosition));
+        toBeMoved.addPathLength(chosenNumber);
+
+        System.out.println(toBeMoved.getColor().toString() + " moving, target color "
+                + map.getPointByIndex(toBeMoved.getPoint().getPosition()).getColor());
+        if (toBeMoved.getPassLength() <= 50
+                && map.getPointByIndex(toBeMoved.getPoint().getPosition()).getColor() == toBeMoved.getColor()) {
+            if (toBeMoved.getPassLength() == 14 || toBeMoved.getPassLength() == 18) {
+//                moveBy(toBeMoved, 12); //shortcut
+                targetPosition = moveBy(toBeMoved, 12);
+                landing(toBeMoved, targetPosition);
+                toBeMoved.setCurrentPoint(map.getPointByIndex(targetPosition));
+                toBeMoved.addPathLength(chosenNumber);
+                System.out.println(toBeMoved.getColor().toString() + " " + "shortcut");
+            } else {
+//                moveBy(toBeMoved, 4); //jump
+                targetPosition = moveBy(toBeMoved, 4);
+                landing(toBeMoved, targetPosition);
+                toBeMoved.setCurrentPoint(map.getPointByIndex(targetPosition));
+                toBeMoved.addPathLength(chosenNumber);
+                System.out.println(toBeMoved.getColor().toString() + " " + "jump");
+            }
+        }
+
         return true;
     }
 

@@ -24,7 +24,8 @@ public class Map {
         }
         for (int j = 0; j < 4; j++) {
             for (int i = 0; i < 6; i++) {
-                points.add(new Point(Color.values()[(j + 2) % 4], i * j + 52));
+//                points.add(new Point(Color.values()[(j + 2) % 4], i * j + 51));
+                points.add(new Point(Color.values()[(j + 2) % 4], i + 6 * j + 52));
             }
         }
         for (int i = 0; i < 4; i++){
@@ -37,18 +38,26 @@ public class Map {
         airplaneStacks.add(airplaneStack);
     }
     public List<AirplaneStack> getAirplaneStacks() {return airplaneStacks;}
+
     private AirplaneStack getAirplaneStackAtPoint(Point point){
         for (AirplaneStack x : airplaneStacks){
             if (x.getPoint() == null) continue;
-            if (x.getPoint().getPosition() == point.getPosition() && x.getPoint().getColor() == point.getColor()){
+            if (x.getPoint().getPosition() == point.getPosition()){// && x.getPoint().getColor() == point.getColor()
+
                 return x;
             }
         }
         return null;
     }
     public AirplaneStack getAirplaneStackAt(int index) {
-        Point point = getPointByIndex(index);
-        return getAirplaneStackAtPoint(point);
+        for (AirplaneStack x : airplaneStacks){
+            if (x.getPoint() == null) continue;
+            if (x.getPoint().getPosition() == index){// && x.getPoint().getColor() == point.getColor()
+
+                return x;
+            }
+        }
+        return null;
     }
 
     public List<Point> getPoints() {return this.points;}

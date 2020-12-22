@@ -69,15 +69,13 @@ public class GameView implements java.io.Serializable {
     }
 
     private void addStackAt(int index, AirplaneStack stack) {
-        if (index < 0) index += 52;
         StackPane airPlane = new StackPane();
-        airPlane.setUserData(stack);
 
         for (int j = 0; j < stack.getStackNum(); j++) {
 //            double x = hangerCenterX(index) + 2 * pointRadius, y = hangerCenterY(index) + 2 * pointRadius;
 
             double x = pointList.get(index).getCenterX(), y = pointList.get(index).getCenterY();
-            System.out.println("index: "+ index + " x: \t" + x + " y: \t"+y);
+            System.out.println("New stack of index " +index + " at (" + x + ", " +y +")");
 
             Circle planeCircle = new Circle();
             planeCircle.setFill(Color.valueOf(colorPlaneCSS(stack.getColor())));
@@ -104,17 +102,25 @@ public class GameView implements java.io.Serializable {
                 if (stage != 2) return;
 
                 if (gameController.moveAttempt(stack)) {
-//                    map.getChildren().remove(airPlane);
-                    TranslateTransition departure = new TranslateTransition(Duration.seconds(0.5), airPlane);
+                    TranslateTransition move = new TranslateTransition(Duration.seconds(0.5), airPlane);
                     double deltaX = pointList.get(stack.getPoint().getPosition()).getCenterX() - planeCircle.getCenterX();
                     double deltaY = pointList.get(stack.getPoint().getPosition()).getCenterY() - planeCircle.getCenterY();
 
-                    departure.setByX(deltaX);
-                    departure.setByY(deltaY);
+                    deltaX -= planeRadius;
+                    deltaY -= planeRadius;
 
-                    departure.play();
+                    move.setByX(deltaX);
+                    move.setByY(deltaY);
 
-                    addStackAt(stack.getPoint().getPosition(), stack);
+                    move.play();
+                    move.setOnFinished(event -> {
+                        System.out.println(map.getChildren().remove(airPlane));
+                        addStackAt(stack.getPoint().getPosition(), stack);
+                    });
+//                    map.getChildren().remove(airPlane);
+                    System.out.println("Target: " + stack.getPoint().getPosition());
+//                    System.out.println(map.getChildren().remove(airPlane));
+
                     gameController.onTurnFinished();
                     stateColumnUpdate();
                     operations.getChildren().removeAll(operations.getChildren());
@@ -146,13 +152,34 @@ public class GameView implements java.io.Serializable {
                 planeCircle.setRadius(planeRadius);
                 planeCircle.setOnMouseClicked(mouseEvent -> {
                     if (stage != 2) return;
+                    if (air.getPassLength() != 0) return;
                     if (air.isDepartured()) {
-                        if (air.getPoint() != null)
-                            System.out.println("Original: " + air.getPoint().getPosition());
                         if (gameController.moveAttempt(air)) {
-                            map.getChildren().remove(airPlane);
                             System.out.println("Target: " + air.getPoint().getPosition());
-                            addStackAt(air.getPoint().getPosition(), air);
+
+                            TranslateTransition move = new TranslateTransition(Duration.seconds(0.5), airPlane);
+                            double deltaX = pointList.get(air.getPoint().getPosition()).getCenterX() - waitingAreaCenterX(air.getColor());
+                            double deltaY = pointList.get(air.getPoint().getPosition()).getCenterY() - waitingAreaCenterY(air.getColor());
+
+                            deltaX -= planeRadius;
+                            deltaY -= planeRadius;
+
+                            move.setByX(deltaX);
+                            move.setByY(deltaY);
+
+                            move.play();
+                            move.setOnFinished(event -> {
+                                System.out.println(map.getChildren().remove(airPlane));
+                                addStackAt(air.getPoint().getPosition(), air);
+                            });
+//                            System.out.println(map.getChildren().remove(airPlane));
+
+                            gameController.onTurnFinished();
+                            stateColumnUpdate();
+                            operations.getChildren().removeAll(operations.getChildren());
+                            operations.getChildren().add(rollBtn);
+                            stage = 0;
+                            return;
                         }
 
                         gameController.onTurnFinished();
@@ -262,7 +289,7 @@ public class GameView implements java.io.Serializable {
         pointList = new ArrayList<>();
         pointList.addAll(this.pointEdge(4, 14, 4, 11, 0));
         pointList.addAll(this.pointEdge(3, 10, 0, 10, 4));
-        pointList.addAll(this.pointEdge(0, 9, 0, 4, 8));
+        pointList.addAll(this.pointEdge(0, 9, 0, 5, 8));
         pointList.addAll(this.pointEdge(0, 4, 3, 4, 13));
         pointList.addAll(this.pointEdge(4, 3, 4, 0, 17));
         pointList.addAll(this.pointEdge(5, 0, 9, 0, 21));
@@ -311,47 +338,6 @@ public class GameView implements java.io.Serializable {
         return map;
     }
 
-//    private void updatePoint(int index) {
-//        this.map.getChildren().remove(this.map.lookup("Stack_" + index));
-//
-//        StackPane airplanes = new StackPane();
-//        airplanes.setId("Stack_" + index);
-//
-//        Circle point = (Circle) this.map.lookup("Point_" + index);
-//        double x = point.getCenterX() - planeRadius, y = point.getCenterY() - planeRadius;
-//
-//        airplanes.setLayoutX(x);
-//        airplanes.setLayoutY(y);
-//
-//        AirplaneStack stack = gameController.getMap().getAirplaneStackAt(index);
-//        int number = stack.getStackNum();
-//
-//        for (int j = 0; j < number; j++) {
-//            x = point.getCenterX(); y = point.getCenterY();
-//            if (j == 3) {
-//                x += planeRadius;
-//                y += planeRadius;
-//            } else if (j == 1) {
-//                x += planeRadius;
-//            } else if (j == 2) {
-//                y += planeRadius;
-//            }
-//            Circle plane = new Circle();
-//            plane.setCenterX(x);
-//            plane.setCenterY(y);
-//            plane.setFill(Color.valueOf(colorPlaneCSS(stack.getColor())));
-//            airplanes.getChildren().add(plane);
-//        }
-//
-//        airplanes.setOnMouseClicked(mouseEvent -> {
-//            stage = 0;
-//            operations.getChildren().removeAll(operations.getChildren());
-//            operations.getChildren().add(rollBtn);
-//            gameController.onTurnFinished();
-//            stateColumnUpdate();
-//        });
-//
-//    }
 
     private void stateColumnUpdate() {
         stateColumn.getChildren().removeAll(stateColumn.getChildren());
@@ -432,6 +418,10 @@ public class GameView implements java.io.Serializable {
 
             int movableNum = (int) gameController.getMap().getAirplaneStacksByColor(gameController.getCurrentTurn()).stream()
                     .filter(AirplaneStack::isDepartured).count();
+            System.out.println(gameController.getCurrentTurn().toString() + " movable: "+ movableNum);
+            for (AirplaneStack a : gameController.getMap().getAirplaneStacksByColor(gameController.getCurrentTurn())) {
+                System.out.println(a.isDepartured());
+            }
 
             if (movableNum == 0 && num1 != 6 && num2 != 6) {
                 Button skip = new Button("skip");
@@ -447,7 +437,8 @@ public class GameView implements java.io.Serializable {
                 operations.getChildren().add(skip);
 
                 return;
-            } else if (movableNum != 0) {
+            }
+            if (movableNum != 0) {
                 operations.getChildren().add(addBtn);
                 if (num1 != num2) operations.getChildren().add(minusBtn);
                 operations.getChildren().add(timesBtn);
@@ -461,7 +452,7 @@ public class GameView implements java.io.Serializable {
                 return;
             }
 
-            Label choosePlane = new Label("Please choose a plane to lift off");
+            Label choosePlane = new Label("Please choose a plane to lift off (" + movableNum +")");
             choosePlane.setFont(new Font(24));
             operations.getChildren().add(choosePlane);
 
@@ -548,6 +539,19 @@ public class GameView implements java.io.Serializable {
         VBox operations = operationColumn();
 
         root.getChildren().addAll(stateColumn, this.map, operations);
+
+        //debug
+//        for (int i = 0; i < 76; i++) {
+//            System.out.println(i + " "
+//                    + gameController.getMap().getPointByIndex(i).getColor() + " "
+//                    + gameController.getMap().getPointByIndex(i).getPosition()
+//                    );
+//        }
+//        addStackAt(13, gameController.getMap().getAirplaneStacksByColor(Model.Color.BLUE).get(0));
+//        addStackAt(14, gameController.getMap().getAirplaneStacksByColor(Model.Color.BLUE).get(0));
+//        addStackAt(15, gameController.getMap().getAirplaneStacksByColor(Model.Color.RED).get(0));
+//        addStackAt(16, gameController.getMap().getAirplaneStacksByColor(Model.Color.RED).get(0));
+//
 
         this.gameView = new Scene(root, width, height);
     }
