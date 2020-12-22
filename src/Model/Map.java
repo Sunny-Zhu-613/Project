@@ -38,6 +38,7 @@ public class Map {
         airplaneStacks.add(airplaneStack);
     }
     public List<AirplaneStack> getAirplaneStacks() {return airplaneStacks;}
+    public void setAirplaneStacks(List<AirplaneStack> stacks){this.airplaneStacks = stacks;}
 
     private AirplaneStack getAirplaneStackAtPoint(Point point){
         for (AirplaneStack x : airplaneStacks){

@@ -119,9 +119,18 @@ public class GameController {
         return true;
     }
     private void battle(AirplaneStack stack1, AirplaneStack stack2) {
-
+        while (stack1.getStackNum() > 0 && stack2.getStackNum() > 0) {
+            int battleNumber1 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+            int battleNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+            if (battleNumber1 > battleNumber2) {
+                stack2.setStackNum(stack2.getStackNum() - 1);
+            }
+            if (battleNumber1 < battleNumber2) {
+                stack1.setStackNum(stack1.getStackNum() - 1);
+            }
+        }
+        this.map.setAirplaneStacks(map.getAirplaneStacks().stream().filter(stack -> (stack.getStackNum() > 0)).collect(Collectors.toList()));
     }
-
     private void stacking(AirplaneStack stack1, AirplaneStack stack2) {
         System.out.println(stack1.getColor().toString() + " stacking " + stack1.getStackNum() + " + " + stack2.getStackNum());
         int num = stack2.getStackNum();
