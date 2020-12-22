@@ -124,9 +124,11 @@ public class GameController {
             int battleNumber2 = ThreadLocalRandom.current().nextInt(1, 6 + 1);
             if (battleNumber1 > battleNumber2) {
                 stack2.setStackNum(stack2.getStackNum() - 1);
+                map.addAirplaneStacks(new AirplaneStack(stack2.getColor()));
             }
             if (battleNumber1 < battleNumber2) {
                 stack1.setStackNum(stack1.getStackNum() - 1);
+                map.addAirplaneStacks(new AirplaneStack(stack1.getColor()));
             }
         }
         this.map.setAirplaneStacks(map.getAirplaneStacks().stream().filter(stack -> (stack.getStackNum() > 0)).collect(Collectors.toList()));
@@ -193,7 +195,7 @@ public class GameController {
                 && map.getPointByIndex(toBeMoved.getPoint().getPosition()).getColor() == toBeMoved.getColor()) {
             if (toBeMoved.getPassLength() == 14 || toBeMoved.getPassLength() == 18) {
 //                moveBy(toBeMoved, 12); //shortcut
-                targetPosition = moveBy(toBeMoved, 12);
+                targetPosition = moveBy(toBeMoved, 16);
                 landing(toBeMoved, targetPosition);
                 toBeMoved.setCurrentPoint(map.getPointByIndex(targetPosition));
                 toBeMoved.addPathLength(chosenNumber);
