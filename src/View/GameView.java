@@ -494,7 +494,7 @@ public class GameView implements java.io.Serializable {
             public void handle(ActionEvent actionEvent) {
                 try {
                     FileOutputStream fileOut =
-                            new FileOutputStream("../savedGames/save.greatAeroplane");
+                            new FileOutputStream("save.greatAeroplane");
                     ObjectOutputStream out = new ObjectOutputStream(fileOut);
                     out.writeObject(gameController.getMap());
                     out.close();

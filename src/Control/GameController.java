@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import static java.lang.StrictMath.abs;
+
 public class GameController {
     private Map map;
     private Color currentTurn;
@@ -162,17 +164,21 @@ public class GameController {
             }
         int currentPosition = toBeMoved.getPoint().getPosition();
 
+        System.out.println("passlength: " + passLength + " step: " + length);
         if (passLength + length < 50) targetPosition = (currentPosition + length) % 52;
-        else if (toBeMoved.getColor() == Color.GREEN) {
-            targetPosition = (currentPosition + length - 52) + 52;
-        } else if (toBeMoved.getColor() == Color.RED) {
-            targetPosition = (currentPosition + length - 52) + 58;
-        } else if (toBeMoved.getColor() == Color.YELLOW) {
-            targetPosition = (currentPosition + length - 52) + 64;
-        } else if (toBeMoved.getColor() == Color.BLUE) {
-            targetPosition = (currentPosition + length - 52) + 70;
-        } else targetPosition = -1; //should never happen
+        else {
+            int modLength = (passLength + length - 51) % 6;
 
+            if (toBeMoved.getColor() == Color.GREEN) {
+                targetPosition = modLength + 52;
+            } else if (toBeMoved.getColor() == Color.RED) {
+                targetPosition = modLength + 58;
+            } else if (toBeMoved.getColor() == Color.YELLOW) {
+                targetPosition = modLength + 64;
+            } else if (toBeMoved.getColor() == Color.BLUE) {
+                targetPosition = modLength + 70;
+            } else targetPosition = -1; //should never happen
+        }
 //        toBeMoved.setCurrentPoint(map.getPointByIndex(targetPosition));
 //        toBeMoved.addPathLength(length);
         return targetPosition;
@@ -192,21 +198,21 @@ public class GameController {
 
         System.out.println(toBeMoved.getColor().toString() + " moving, target color "
                 + map.getPointByIndex(toBeMoved.getPoint().getPosition()).getColor());
-        if (toBeMoved.getPassLength() <= 50
+        if (toBeMoved.getPassLength() <= 49
                 && map.getPointByIndex(toBeMoved.getPoint().getPosition()).getColor() == toBeMoved.getColor()) {
             if (toBeMoved.getPassLength() == 14 || toBeMoved.getPassLength() == 18) {
 //                moveBy(toBeMoved, 12); //shortcut
                 targetPosition = moveBy(toBeMoved, 16);
                 landing(toBeMoved, targetPosition);
                 toBeMoved.setCurrentPoint(map.getPointByIndex(targetPosition));
-                toBeMoved.addPathLength(chosenNumber);
+                toBeMoved.addPathLength(16);
                 System.out.println(toBeMoved.getColor().toString() + " " + "shortcut");
             } else {
 //                moveBy(toBeMoved, 4); //jump
                 targetPosition = moveBy(toBeMoved, 4);
                 landing(toBeMoved, targetPosition);
                 toBeMoved.setCurrentPoint(map.getPointByIndex(targetPosition));
-                toBeMoved.addPathLength(chosenNumber);
+                toBeMoved.addPathLength(4);
                 System.out.println(toBeMoved.getColor().toString() + " " + "jump");
             }
         }

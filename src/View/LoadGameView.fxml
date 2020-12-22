@@ -15,7 +15,7 @@
         <TextField id="filePath"
                    fx:id="filePath"
                    onAction="#handleGetPath"
-                   text="../savedGames/save.greatAeroplane"
+                   text="save.greatAeroplane"
         />
     </VBox>
 
