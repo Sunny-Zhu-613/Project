@@ -14,7 +14,9 @@
         <Label text="Please Enter the Path to Your Saved File"/>
         <TextField id="filePath"
                    fx:id="filePath"
-                   onAction="#handleGetPath"/>
+                   onAction="#handleGetPath"
+                   text="../savedGames/save.greatAeroplane"
+        />
     </VBox>
 
 </AnchorPane>

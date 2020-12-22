@@ -1,6 +1,6 @@
 package Model;
 
-public class Point {
+public class Point implements java.io.Serializable {
     private final Color color;
     private int position;
 

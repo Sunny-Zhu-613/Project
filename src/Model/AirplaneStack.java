@@ -2,7 +2,7 @@ package Model;
 
 import Control.GameController;
 
-public class AirplaneStack {
+public class AirplaneStack implements java.io.Serializable {
     private final Color color;
     private boolean isDepartured;
     private boolean isFinished;

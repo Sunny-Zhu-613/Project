@@ -22,6 +22,7 @@ public class GameController {
     }
 
     public Map getMap() {return this.map;}
+    public void setMap(Map map) {this.map = map;}
     public Color getCurrentTurn() {return this.currentTurn;}
     public int getDieNumber1() {return this.dieNumber1;}
     public int getDieNumber2() {return this.dieNumber2;}

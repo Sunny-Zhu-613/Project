@@ -27,8 +27,11 @@ public class LoadGameController {
             ObjectInputStream in = new ObjectInputStream(fileIn);
             Stage newStage = Aeroplane.getPrimaryStage();
             newStage.setTitle("Aeroplane");
-            GameView gameView = (GameView) in.readObject();;
+
+            Model.Map map = (Model.Map) in.readObject();
+            GameView gameView = new GameView(1200, 600, map);
             newStage.setScene(gameView.getGameView());
+
             Aeroplane.switchStage(newStage);
         } catch (IOException i) {
             i.printStackTrace();

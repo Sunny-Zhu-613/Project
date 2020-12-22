@@ -1,6 +1,6 @@
 package Model;
 
-public enum Color {
+public enum Color implements java.io.Serializable {
     YELLOW, BLUE, GREEN, RED, BLANK;
     // BLANK for FinalPath
     public Color next()
